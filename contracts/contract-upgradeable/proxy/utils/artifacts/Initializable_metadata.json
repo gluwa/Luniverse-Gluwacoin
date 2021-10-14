@@ -1,0 +1,38 @@
+{
+	"compiler": {
+		"version": "0.5.17+commit.d19bba13"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"details": "This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed behind a proxy. Since a proxied contract can't have a constructor, it's common to move constructor logic to an external initializer function, usually called `initialize`. It then becomes necessary to protect this initializer function so it can only be called once. The {initializer} modifier provided by this contract will have this effect. * TIP: To avoid leaving the proxy in an uninitialized state, the initializer function should be called as early as possible by providing the encoded function call as the `_data` argument to {ERC1967Proxy-constructor}. * CAUTION: When used with inheritance, manual care must be taken to not invoke a parent initializer twice, or to ensure that all initializers are idempotent. This is not verified automatically as constructors are by Solidity.",
+			"methods": {}
+		},
+		"userdoc": {
+			"methods": {}
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/contract-upgradeable/proxy/utils/Initializable.sol": "Initializable"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/contract-upgradeable/proxy/utils/Initializable.sol": {
+			"keccak256": "0x9807667716ec5b37a0736b6de236c453b7dd4a35189ff3016827d5f731ce4d59",
+			"urls": [
+				"bzz-raw://ce22dc37d25146f4f92fdccb95de79110baca63b76e8664c78ce08dc89ee2440",
+				"dweb:/ipfs/QmRrHnoXLK3kYQHUV8YUtCnABS9q1o13bh42SjKE5FUtZb"
+			]
+		}
+	},
+	"version": 1
+}

@@ -15,11 +15,11 @@ contract GluwaRole is Context {
 
     Roles.Role private _Gluwas;
 
-    constructor(address sender) public {
-        if (!isGluwa(sender)) {
-            _addGluwa(sender);
-        }
-    }
+    // constructor(address sender) public {
+    //     if (!isGluwa(sender)) {
+    //         _addGluwa(sender);
+    //     }
+    // } 
 
     modifier onlyGluwa() {
         require(isGluwa(_msgSender()), "GluwaRole: caller does not have the Gluwa role");

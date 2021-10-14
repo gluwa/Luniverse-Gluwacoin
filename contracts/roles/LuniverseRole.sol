@@ -15,11 +15,11 @@ contract LuniverseRole is Context {
 
     Roles.Role private _Luniverses;
 
-    constructor(address sender) public {
-        if (!isLuniverse(sender)) {
-            _addLuniverse(sender);
-        }
-    }
+    // constructor(address sender) public {
+    //     if (!isLuniverse(sender)) {
+    //         _addLuniverse(sender);
+    //     }
+    // }
 
     modifier onlyLuniverse() {
         require(isLuniverse(_msgSender()), "LuniverseRole: caller does not have the Luniverse role");
