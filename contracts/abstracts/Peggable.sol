@@ -2,7 +2,7 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/GSN/Context.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
+// import "@openzeppelin/contracts/utils/Address.sol";
 
 import "./BeforeTransferERC20.sol";
 import "../roles/GluwaRole.sol";
@@ -17,7 +17,7 @@ import "../roles/LuniverseRole.sol";
  * You cannot process a peg more than once.
  */
 contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
-    using Address for address;
+    // using Address for address;
 
     struct Peg {
         uint256 _amount;

@@ -2,8 +2,8 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/GSN/Context.sol";
-import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
+// import "@openzeppelin/contracts/cryptography/ECDSA.sol";
+// import "@openzeppelin/contracts/utils/Address.sol";
 
 import "./BeforeTransferERC20.sol";
 import "../Validate.sol";
@@ -14,8 +14,8 @@ import "../roles/GluwaRole.sol";
  * gas fee for them. The relayer gets paid in this ERC20 token for `fee`.
  */
 contract ETHlessTransfer is Context, BeforeTransferERC20, GluwaRole {
-    using Address for address;
-    using ECDSA for bytes32;
+    // using Address for address;
+    // using ECDSA for bytes32;
 
     mapping (address => mapping (uint256 => bool)) private _usedNonces;
 
