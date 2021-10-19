@@ -16,7 +16,7 @@ import "./abstracts/ERC20Pausable.sol";
 contract LuniverseGluwacoin is ERC20Pausable, Peggable, Reservable, ETHlessTransfer {
 
     function initialize(string memory name, string memory symbol, uint8 decimals) public {
-        _tokenInit(name, symbol, decimals);
+        _init_unchained(name, symbol, decimals);
         _addGluwa(msg.sender);
         _addLuniverse(msg.sender);
 

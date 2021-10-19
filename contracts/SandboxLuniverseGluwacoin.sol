@@ -12,7 +12,7 @@ contract SandboxLuniverseGluwacoin is ERC20Pausable, Peggable, Reservable, ETHle
     // constructor(string memory name, string memory symbol, uint8 decimals) public
     // BeforeTransferERC20(name, symbol, decimals) GluwaRole(msg.sender) LuniverseRole(msg.sender) {}
     function initialize(string memory name, string memory symbol, uint8 decimals) public {
-        _tokenInit(name, symbol, decimals);
+        _init_unchained(name, symbol, decimals);
         _addGluwa(msg.sender);
         _addLuniverse(msg.sender);
 

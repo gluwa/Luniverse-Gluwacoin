@@ -2,7 +2,7 @@
 
 pragma solidity ^0.5.0;
 
-import "./openzeppelin/Pausable.sol";
+import "./Pausable.sol";
 
 import "./BeforeTransferERC20.sol";
 
