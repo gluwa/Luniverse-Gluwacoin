@@ -985,6 +985,7 @@ contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
         _balances[account] = _balances[account].add(amount);
         emit Transfer(address(0), account, amount);
     }
+    event Burnt(address indexed _burnFrom, uint256 _value);
 
     /**
      * @dev Destroys `amount` tokens from `account`, reducing the
@@ -1004,6 +1005,7 @@ contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
 
         _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
         _totalSupply = _totalSupply.sub(amount);
+        emit Burnt(_msgSender(), amount);
         emit Transfer(account, address(0), amount);
     }
 
@@ -1974,33 +1976,30 @@ contract ERC20Pausable is BeforeTransferERC20, Pausable {
  *
  * At construction, the deployer of the contract is the only minter.
  */
-contract LuniverseGluwacoin is ERC20Pausable, Peggable, Reservable, ETHlessTransfer {
-
+contract LuniverseGluwacoin is Initializable,ERC20Pausable,GluwaRole, LuniverseRole, Peggable, Reservable, ETHlessTransfer {
     function initialize(string memory name, string memory symbol, uint8 decimals) public {
+        _LuniverseGluwacoin_init_unchained(name, symbol, decimals);
+    }
+
+    function _LuniverseGluwacoin_init_unchained(string memory name, string memory symbol, uint8 decimals)internal initializer{
         _init_unchained(name, symbol, decimals);
         _addGluwa(msg.sender);
         _addLuniverse(msg.sender);
 
     }
-    event Burnt(address indexed _burnFrom, uint256 _value);
-
     /**
      * @dev Destroys `amount` tokens from the caller.
      *
      * See {ERC20-_burn}.
      */
-    function burn(uint256 amount) public {
-        emit Burnt(_msgSender(), amount);
-
+    function burn(uint256 amount) external {
         _burn(_msgSender(), amount);
     }
 
     /**
      * @dev See {ERC20-_burnFrom}.
      */
-    function burnFrom(address account, uint256 amount) public {
-        emit Burnt(account, amount);
-
+    function burnFrom(address account, uint256 amount) external {
         _burnFrom(account, amount);
     }
 

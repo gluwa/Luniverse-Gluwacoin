@@ -213,6 +213,7 @@ contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
         _balances[account] = _balances[account].add(amount);
         emit Transfer(address(0), account, amount);
     }
+    event Burnt(address indexed _burnFrom, uint256 _value);
 
     /**
      * @dev Destroys `amount` tokens from `account`, reducing the
@@ -232,6 +233,7 @@ contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
 
         _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
         _totalSupply = _totalSupply.sub(amount);
+        emit Burnt(_msgSender(), amount);
         emit Transfer(account, address(0), amount);
     }
 
