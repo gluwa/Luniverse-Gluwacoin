@@ -51,4 +51,5 @@ contract LuniverseRole is Context {
         _Luniverses.remove(account);
         emit LuniverseRemoved(account);
     }
+    uint256[50] private __gap;
 }

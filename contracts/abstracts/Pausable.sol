@@ -22,4 +22,6 @@ contract Pausable is Context, PauserRole {
     function paused() public view returns (bool) {
         return _paused;
     }
+    uint256[50] private __gap;
+
 }

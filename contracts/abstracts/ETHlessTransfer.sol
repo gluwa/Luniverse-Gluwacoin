@@ -60,4 +60,5 @@ contract ETHlessTransfer is Context, BeforeTransferERC20, GluwaRole {
     function _collect(address sender, uint256 amount) internal {
         _transfer(sender, _msgSender(), amount);
     }
+    uint256[50] private __gap;
 }

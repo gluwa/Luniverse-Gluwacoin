@@ -108,4 +108,5 @@ contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
 
         _pegged[txnHash]._processed = true;
     }
+    uint256[50] private __gap;
 }

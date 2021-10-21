@@ -51,4 +51,6 @@ contract GluwaRole is Context {
         _Gluwas.remove(account);
         emit GluwaRemoved(account);
     }
+    uint256[50] private __gap;
+
 }

@@ -45,4 +45,6 @@ contract Initializable {
             _initializing = false;
         }
     }
+    uint256[50] private __gap;
+
 }

@@ -142,4 +142,5 @@ contract Reservable is BeforeTransferERC20 {
 
         super._beforeTokenTransfer(from, to, amount);
     }
+    uint256[50] private __gap;
 }

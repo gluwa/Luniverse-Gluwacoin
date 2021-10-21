@@ -19,13 +19,8 @@ import "./roles/LuniverseRole.sol";
 contract LuniverseGluwacoin is Initializable,ERC20Pausable,GluwaRole, LuniverseRole, Peggable, Reservable, ETHlessTransfer {
     function initialize(string memory name, string memory symbol, uint8 decimals) public {
         _LuniverseGluwacoin_init_unchained(name, symbol, decimals);
-    }
-
-    function _LuniverseGluwacoin_init_unchained(string memory name, string memory symbol, uint8 decimals)internal initializer{
-        _init_unchained(name, symbol, decimals);
         _addGluwa(msg.sender);
         _addLuniverse(msg.sender);
-
     }
     /**
      * @dev Destroys `amount` tokens from the caller.
@@ -42,6 +37,7 @@ contract LuniverseGluwacoin is Initializable,ERC20Pausable,GluwaRole, LuniverseR
     function burnFrom(address account, uint256 amount) external {
         _burnFrom(account, amount);
     }
+    uint256[50] private __gap;
 
  
 }

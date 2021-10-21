@@ -9,11 +9,12 @@ import "./ERC20Upgradeable.sol";
  *
  * Changes made to `_transfer`, `_mint`, and `_burn` to add `_beforeTransfer`.
  */
-contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
+contract BeforeTransferERC20 is Context, ERC20Upgradeable {
     using SafeMath for uint256;
 
-    mapping (address => uint256) private _balances;
+    event Burnt(address indexed _burnFrom, uint256 _value);
 
+    mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
 
     uint256 private _totalSupply;
@@ -32,7 +33,7 @@ contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
     //     _symbol = symbol;
     //     _decimals = decimals;
     // }
-    function _init_unchained(string memory name, string memory symbol, uint8 decimals) public {
+    function _LuniverseGluwacoin_init_unchained(string memory name, string memory symbol, uint8 decimals) public {
         _name = name;
         _symbol = symbol;
         _decimals = decimals;
@@ -213,7 +214,6 @@ contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
         _balances[account] = _balances[account].add(amount);
         emit Transfer(address(0), account, amount);
     }
-    event Burnt(address indexed _burnFrom, uint256 _value);
 
     /**
      * @dev Destroys `amount` tokens from `account`, reducing the
@@ -284,4 +284,6 @@ contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal { }
+    uint256[50] private __gap;
+
 }

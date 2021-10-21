@@ -390,6 +390,8 @@ contract Initializable {
             _initializing = false;
         }
     }
+    uint256[50] private __gap;
+
 }
 
 // SPDX-License-Identifier: MIT
@@ -781,7 +783,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
  *
  * Changes made to `_transfer`, `_mint`, and `_burn` to add `_beforeTransfer`.
  */
-contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
+contract BeforeTransferERC20 is Context, ERC20Upgradeable {
     using SafeMath for uint256;
 
     mapping (address => uint256) private _balances;
@@ -804,7 +806,7 @@ contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
     //     _symbol = symbol;
     //     _decimals = decimals;
     // }
-    function _init_unchained(string memory name, string memory symbol, uint8 decimals) public {
+    function _LuniverseGluwacoin_init_unchained(string memory name, string memory symbol, uint8 decimals) public {
         _name = name;
         _symbol = symbol;
         _decimals = decimals;
@@ -1056,6 +1058,8 @@ contract BeforeTransferERC20 is Context, IERC20, ERC20Upgradeable {
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal { }
+    uint256[50] private __gap;
+
 }
 
 /**
@@ -1535,6 +1539,8 @@ contract GluwaRole is Context {
         _Gluwas.remove(account);
         emit GluwaRemoved(account);
     }
+    uint256[50] private __gap;
+
 }
 
 // SPDX-License-Identifier: MIT
@@ -1591,6 +1597,7 @@ contract ETHlessTransfer is Context, BeforeTransferERC20, GluwaRole {
     function _collect(address sender, uint256 amount) internal {
         _transfer(sender, _msgSender(), amount);
     }
+    uint256[50] private __gap;
 }
 
 // SPDX-License-Identifier: MIT
@@ -1639,6 +1646,7 @@ contract LuniverseRole is Context {
         _Luniverses.remove(account);
         emit LuniverseRemoved(account);
     }
+    uint256[50] private __gap;
 }
 
 // SPDX-License-Identifier: MIT
@@ -1743,6 +1751,7 @@ contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
 
         _pegged[txnHash]._processed = true;
     }
+    uint256[50] private __gap;
 }
 
 // SPDX-License-Identifier: MIT
@@ -1883,6 +1892,7 @@ contract Reservable is BeforeTransferERC20 {
 
         super._beforeTokenTransfer(from, to, amount);
     }
+    uint256[50] private __gap;
 }
 
 contract PauserRole is Context {
@@ -1944,6 +1954,8 @@ contract Pausable is Context, PauserRole {
     function paused() public view returns (bool) {
         return _paused;
     }
+    uint256[50] private __gap;
+
 }
 
 // SPDX-License-Identifier: MIT
@@ -1967,6 +1979,8 @@ contract ERC20Pausable is BeforeTransferERC20, Pausable {
 
         require(!paused(), "ERC20Pausable: token transfer while paused");
     }
+    uint256[50] private __gap;
+
 }
 
 // SPDX-License-Identifier: MIT
@@ -1979,13 +1993,8 @@ contract ERC20Pausable is BeforeTransferERC20, Pausable {
 contract LuniverseGluwacoin is Initializable,ERC20Pausable,GluwaRole, LuniverseRole, Peggable, Reservable, ETHlessTransfer {
     function initialize(string memory name, string memory symbol, uint8 decimals) public {
         _LuniverseGluwacoin_init_unchained(name, symbol, decimals);
-    }
-
-    function _LuniverseGluwacoin_init_unchained(string memory name, string memory symbol, uint8 decimals)internal initializer{
-        _init_unchained(name, symbol, decimals);
         _addGluwa(msg.sender);
         _addLuniverse(msg.sender);
-
     }
     /**
      * @dev Destroys `amount` tokens from the caller.
