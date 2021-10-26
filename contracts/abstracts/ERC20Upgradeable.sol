@@ -4,10 +4,13 @@
 pragma solidity ^0.5.0;
 
 import "./IERC20Upgradeable.sol";
-// import "./IERC20MetadataUpgradeable.sol";
+ 
 import "./ContextUpgradeable.sol";
+import "@openzeppelin/contracts/GSN/Context.sol";
+// import "@openzeppelin/contracts/utils/Address.sol";
 import "./Initializable.sol";
-
+import "./SafeMath.sol";
+import "./Pausable.sol";
 /**
  * @dev Implementation of the {IERC20} interface.
  *
@@ -33,15 +36,20 @@ import "./Initializable.sol";
  * functions have been added to mitigate the well-known issues around setting
  * allowances. See {IERC20-approve}.
  */
-contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeable {
+contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20Upgradeable {
+    using SafeMath for uint256;
+    // using Address for address;
+
     mapping(address => uint256) private _balances;
 
     mapping(address => mapping(address => uint256)) private _allowances;
+    event Burnt(address indexed _burnFrom, uint256 _value);
 
     uint256 private _totalSupply;
 
     string private _name;
     string private _symbol;
+    uint8 private _decimals;
 
     /**
      * @dev Sets the values for {name} and {symbol}.
@@ -52,14 +60,15 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
      * All two of these values are immutable: they can only be set once during
      * construction.
      */
-    function __ERC20_init(string memory name_, string memory symbol_) internal initializer {
+    function __ERC20_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
         __Context_init_unchained();
-        __ERC20_init_unchained(name_, symbol_);
+        __ERC20_init_unchained(name_, symbol_, decimals_);
     }
 
-    function __ERC20_init_unchained(string memory name_, string memory symbol_) internal initializer {
+    function __ERC20_init_unchained(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
         _name = name_;
         _symbol = symbol_;
+        _decimals = decimals_;
     }
 
     /**
@@ -77,21 +86,8 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
         return _symbol;
     }
 
-    /**
-     * @dev Returns the number of decimals used to get its user representation.
-     * For example, if `decimals` equals `2`, a balance of `505` tokens should
-     * be displayed to a user as `5.05` (`505 / 10 ** 2`).
-     *
-     * Tokens usually opt for a value of 18, imitating the relationship between
-     * Ether and Wei. This is the value {ERC20} uses, unless this function is
-     * overridden;
-     *
-     * NOTE: This information is only used for _display_ purposes: it in
-     * no way affects any of the arithmetic of the contract, including
-     * {IERC20-balanceOf} and {IERC20-transfer}.
-     */
     function decimals() public view returns (uint8) {
-        return 18;
+        return _decimals;
     }
 
     /**
@@ -289,12 +285,27 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
             _balances[account] = accountBalance - amount;
         // }
         _totalSupply -= amount;
+        emit Burnt(_msgSender(), amount);
 
         emit Transfer(account, address(0), amount);
 
         _afterTokenTransfer(account, address(0), amount);
     }
+    function _burnFrom(address account, uint256 amount) internal {
+        _burn(account, amount);
+        _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount, "ERC20: burn amount exceeds allowance"));
+    }
 
+    function burn(uint256 amount) public {
+        _burn(_msgSender(), amount);
+    }
+
+    /**
+     * @dev See {ERC20-_burnFrom}.
+     */
+    function burnFrom(address account, uint256 amount) public {
+        _burnFrom(account, amount);
+    }
     /**
      * @dev Sets `amount` as the allowance of `spender` over the `owner` s tokens.
      *
@@ -338,7 +349,10 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
         address from,
         address to,
         uint256 amount
-    ) internal {}
+    ) internal {
+        require(!paused(), "ERC20Pausable: token transfer while paused");
+
+    }
 
     /**
      * @dev Hook that is called after any transfer of tokens. This includes

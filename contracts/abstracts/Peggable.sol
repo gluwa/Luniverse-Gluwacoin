@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-import "@openzeppelin/contracts/GSN/Context.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
-
-import "./BeforeTransferERC20.sol";
+import "./ERC20Upgradeable.sol";
 import "../roles/GluwaRole.sol";
 import "../roles/LuniverseRole.sol";
 
@@ -16,7 +13,7 @@ import "../roles/LuniverseRole.sol";
  * Also, only Gluwa or Luniverse can process approved pegs.
  * You cannot process a peg more than once.
  */
-contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
+contract Peggable is ERC20Upgradeable, GluwaRole, LuniverseRole {
     // using Address for address;
 
     struct Peg {
@@ -26,7 +23,16 @@ contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
         bool _luniverseApproved;
         bool _processed;
     }
+    function __Peggable_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
+        __Context_init_unchained();
+        __ERC20_init_unchained(name_, symbol_, decimals_);
+        __GluwaRole_init_unchained(msg.sender);
+        __LuniverseRole_init_unchained(msg.sender);
+        __Peggable_init_unchained();
+    }
 
+    function __Peggable_init_unchained() internal initializer {
+    }
     // transactionHash mapping to Peg.
     mapping (bytes32 => Peg) private _pegged;
 

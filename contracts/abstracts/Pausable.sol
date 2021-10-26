@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "@openzeppelin/contracts/GSN/Context.sol";
+// import "@openzeppelin/contracts/GSN/Context.sol";
 import "@openzeppelin/contracts/access/roles/PauserRole.sol";
 
 /**
@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/access/roles/PauserRole.sol";
  * the functions of your contract. Note that they will not be pausable by
  * simply including this module, only once the modifiers are put in place.
  */
-contract Pausable is Context, PauserRole {
+contract Pausable is PauserRole {
 
     bool private _paused;
 
