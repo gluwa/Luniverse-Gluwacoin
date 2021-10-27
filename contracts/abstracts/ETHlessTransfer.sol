@@ -8,13 +8,13 @@ import "./ContextUpgradeable.sol";
 // import "./BeforeTransferERC20.sol";
 import "./ERC20Upgradeable.sol";
 import "../Validate.sol";
-import "../roles/GluwaRole.sol";
+import "../roles/AllRoles.sol";
 
 /**
  * @dev Extension of {ERC20} that allows users to send ETHless transfer by hiring a transaction relayer to pay the
  * gas fee for them. The relayer gets paid in this ERC20 token for `fee`.
  */
-contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, GluwaRole {
+contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, AllRoles {
     // using Address for address;
     // using ECDSA for bytes32;
 
@@ -23,7 +23,7 @@ contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, GluwaRole {
     function __ETHlessTransfer_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
         __Context_init_unchained();
         __ERC20_init_unchained(name_, symbol_, decimals_);
-        __GluwaRole_init_unchained(msg.sender);
+        __AllRoles_init_unchained();
         __ETHlessTransfer_init_unchained();
     }
 
@@ -51,7 +51,8 @@ contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, GluwaRole {
         bytes32 hash = keccak256(abi.encodePacked(address(this), sender, recipient, amount, fee, nonce));
         Validate.validateSignature(hash, sender, sig);
 
-        _collect(sender, fee);
+        // _collect(sender, fee);
+        _transfer(sender, _msgSender(), fee);
         _transfer(sender, recipient, amount);
 
         return true;
@@ -68,8 +69,8 @@ contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, GluwaRole {
      *
      * Emits a {Transfer} event.
      */
-    function _collect(address sender, uint256 amount) internal {
-        _transfer(sender, _msgSender(), amount);
-    }
+    // function _collect(address sender, uint256 amount) internal {
+    //     _transfer(sender, _msgSender(), amount);
+    // }
     uint256[50] private __gap;
 }

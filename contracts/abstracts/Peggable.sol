@@ -2,8 +2,9 @@
 pragma solidity ^0.5.0;
 
 import "./ERC20Upgradeable.sol";
-import "../roles/GluwaRole.sol";
-import "../roles/LuniverseRole.sol";
+// import "../roles/GluwaRole.sol";
+// import "../roles/LuniverseRole.sol";
+import "../roles/AllRoles.sol";
 
 /**
  * @dev Extension of {ERC20} that allows users to 2-way peg tokens from a sidechain of Luniverse, the Ethereum.
@@ -13,7 +14,7 @@ import "../roles/LuniverseRole.sol";
  * Also, only Gluwa or Luniverse can process approved pegs.
  * You cannot process a peg more than once.
  */
-contract Peggable is ERC20Upgradeable, GluwaRole, LuniverseRole {
+contract Peggable is ERC20Upgradeable, AllRoles {
     // using Address for address;
 
     struct Peg {
@@ -26,8 +27,7 @@ contract Peggable is ERC20Upgradeable, GluwaRole, LuniverseRole {
     function __Peggable_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
         __Context_init_unchained();
         __ERC20_init_unchained(name_, symbol_, decimals_);
-        __GluwaRole_init_unchained(msg.sender);
-        __LuniverseRole_init_unchained(msg.sender);
+        __AllRoles_init_unchained();
         __Peggable_init_unchained();
     }
 

@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
 // import "@openzeppelin/contracts/GSN/Context.sol";
-import "@openzeppelin/contracts/access/roles/PauserRole.sol";
+// import "@openzeppelin/contracts/access/roles/PauserRole.sol";
 
 /**
  * @dev Contract module which allows children to implement an emergency stop
@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/access/roles/PauserRole.sol";
  * the functions of your contract. Note that they will not be pausable by
  * simply including this module, only once the modifiers are put in place.
  */
-contract Pausable is PauserRole {
+contract Pausable{
 
     bool private _paused;
 

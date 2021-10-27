@@ -10,8 +10,8 @@ import "./abstracts/Pausable.sol";
 
 
 import "./abstracts/Initializable.sol";
-import "./roles/GluwaRole.sol";
-import "./roles/LuniverseRole.sol";
+import "./roles/AllRoles.sol";
+// import "./roles/LuniverseRole.sol";
 
 /**
  * @dev Extension of {ERC20} that adds a set of accounts with the {MinterRole},
@@ -19,17 +19,16 @@ import "./roles/LuniverseRole.sol";
  *
  * At construction, the deployer of the contract is the only minter.
  */
-contract LuniverseGluwacoin is Initializable ,GluwaRole, LuniverseRole, ETHlessTransfer, Peggable, Reservable {
+contract LuniverseGluwacoin is Initializable ,AllRoles, ETHlessTransfer, Peggable, Reservable {
     function initialize(string memory name, string memory symbol, uint8 decimals) public {
         __Context_init_unchained();
-        __GluwaRole_init_unchained(msg.sender);
-        __LuniverseRole_init_unchained(msg.sender);
+        __AllRoles_init_unchained();
         __ERC20_init_unchained(name, symbol, decimals);
         __ETHlessTransfer_init_unchained();
         __Peggable_init_unchained();
         __Reservable_init_unchained();
-        _addGluwa(msg.sender);
-        _addLuniverse(msg.sender);
+        _addRole(msg.sender, true);
+        _addRole(msg.sender, false);
     }
 
     uint256[50] private __gap;
