@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-// import "@openzeppelin/contracts/GSN/Context.sol";
-// import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
 import "./ContextUpgradeable.sol";
-// import "./BeforeTransferERC20.sol";
 import "./ERC20Upgradeable.sol";
 import "../Validate.sol";
 import "../roles/AllRoles.sol";
@@ -15,8 +11,6 @@ import "../roles/AllRoles.sol";
  * gas fee for them. The relayer gets paid in this ERC20 token for `fee`.
  */
 contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, AllRoles {
-    // using Address for address;
-    // using ECDSA for bytes32;
 
     mapping (address => mapping (uint256 => bool)) private _usedNonces;
 
@@ -51,8 +45,7 @@ contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, AllRoles {
         bytes32 hash = keccak256(abi.encodePacked(address(this), sender, recipient, amount, fee, nonce));
         Validate.validateSignature(hash, sender, sig);
 
-        // _collect(sender, fee);
-        _transfer(sender, _msgSender(), fee);
+        _collect(sender, fee);
         _transfer(sender, recipient, amount);
 
         return true;
@@ -69,8 +62,8 @@ contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, AllRoles {
      *
      * Emits a {Transfer} event.
      */
-    // function _collect(address sender, uint256 amount) internal {
-    //     _transfer(sender, _msgSender(), amount);
-    // }
+    function _collect(address sender, uint256 amount) internal {
+        _transfer(sender, _msgSender(), amount);
+    }
     uint256[50] private __gap;
 }

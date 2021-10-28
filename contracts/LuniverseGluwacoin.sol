@@ -1,17 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-
 import "./abstracts/ETHlessTransfer.sol";
 import "./abstracts/Peggable.sol";
 import "./abstracts/Reservable.sol";
-// import "./abstracts/ERC20Pausable.sol";
 import "./abstracts/Pausable.sol";
-
-
 import "./abstracts/Initializable.sol";
 import "./roles/AllRoles.sol";
-// import "./roles/LuniverseRole.sol";
 
 /**
  * @dev Extension of {ERC20} that adds a set of accounts with the {MinterRole},
@@ -27,8 +22,8 @@ contract LuniverseGluwacoin is Initializable ,AllRoles, ETHlessTransfer, Peggabl
         __ETHlessTransfer_init_unchained();
         __Peggable_init_unchained();
         __Reservable_init_unchained();
-        _addRole(msg.sender, true);
-        _addRole(msg.sender, false);
+        _addRole(_msgSender(), true);
+        _addRole(_msgSender(), false);
     }
 
     uint256[50] private __gap;

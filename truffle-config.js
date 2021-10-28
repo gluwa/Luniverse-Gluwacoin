@@ -21,10 +21,12 @@
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
 const PrivateKeyProvider = require("truffle-privatekey-provider");
 
-// const infuraKey = "fj4jll3k.....";
+const infuraKey = "05aa70b19b7543f5bf120cbeb0a50dda";
 //
 // const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+// const mnemonic = fs.readFileSync(".secret").PRIVATE_KEY;
+const privKeys = require("./secret");
+
 
 module.exports = {
   /**
@@ -50,7 +52,7 @@ module.exports = {
     //  network_id: "*",       // Any network (default: none)
     // },
     rinkeby: {
-      provider: () => new PrivateKeyProvider("346a32531d60a3dca7cb34750e59b07d68290feeec013483e6536b05ff987eb9", "https://rinkeby.infura.io/v3/05aa70b19b7543f5bf120cbeb0a50dda"),
+      provider: () => new PrivateKeyProvider(privKeys, "https://rinkeby.infura.io/v3/"+infuraKey),
       network_id: '4',
     },
     // Another network with more advanced options...

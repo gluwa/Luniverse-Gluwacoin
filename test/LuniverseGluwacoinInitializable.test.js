@@ -98,7 +98,7 @@ describe('Token02 - After upgrade test',()=>{
                 expect(await this.ProxyAdmin.getProxyImplementation(TransparentProxy_Address)).to.equal(Token02_Address);
         });
         it('New Function in Token02',async()=>{
-                expect(await this.Token.newFunc()).to.equal("New Funciton");
+                expect(await this.Token.newFunc()).to.equal("New Function");
         });
         it('New Variable in Token02',async()=>{
                 expect(await this.Token.newVar()).to.equal("New Variable");

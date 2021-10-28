@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/access/Roles.sol";
 import "../abstracts/ContextUpgradeable.sol";
 
 contract AllRoles is ContextUpgradeable {
-    // using Address for address;
     using Roles for Roles.Role;
     
     event GluwaAdded(address indexed account);

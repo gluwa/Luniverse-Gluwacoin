@@ -1,7 +1,6 @@
 pragma solidity ^0.5.0;
 
 
-// SPDX-License-Identifier: MIT
 /**
  * @dev This is a base contract to aid in writing upgradeable contracts, or any kind of contract that will be deployed
  * behind a proxy. Since a proxied contract can't have a constructor, it's common to move constructor logic to an
@@ -59,9 +58,9 @@ contract Initializable {
  * This contract is only required for intermediate, library-like contracts.
  */
 contract ContextUpgradeable is Initializable {
-    // function __Context_init() internal initializer {
-    //     __Context_init_unchained();
-    // }
+    function __Context_init() internal initializer {
+        __Context_init_unchained();
+    }
 
     function __Context_init_unchained() internal initializer {
     }
@@ -232,7 +231,10 @@ library SafeMath {
      * - Subtraction cannot overflow.
      */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        return sub(a, b, "SafeMath: subtraction overflow");
+        uint256 c = a - b;
+        require(b <= a, "SafeMath: subtraction overflow");
+
+        return c;
     }
 
     /**
@@ -255,82 +257,8 @@ library SafeMath {
 
 }
 
-/**
- * @title Roles
- * @dev Library for managing addresses assigned to a Role.
- */
-library Roles {
-    struct Role {
-        mapping (address => bool) bearer;
-    }
-
-    /**
-     * @dev Give an account access to this role.
-     */
-    function add(Role storage role, address account) internal {
-        require(!has(role, account), "Roles: account already has role");
-        role.bearer[account] = true;
-    }
-
-    /**
-     * @dev Remove an account's access to this role.
-     */
-    function remove(Role storage role, address account) internal {
-        require(has(role, account), "Roles: account does not have role");
-        role.bearer[account] = false;
-    }
-
-    /**
-     * @dev Check if an account has this role.
-     * @return bool
-     */
-    function has(Role storage role, address account) internal view returns (bool) {
-        require(account != address(0), "Roles: account is the zero address");
-        return role.bearer[account];
-    }
-}
-
-contract PauserRole is ContextUpgradeable {
-    using Roles for Roles.Role;
-
-    event PauserAdded(address indexed account);
-    event PauserRemoved(address indexed account);
-
-    Roles.Role private _pausers;
-
-    constructor () internal {
-        _addPauser(_msgSender());
-    }
-
-    modifier onlyPauser() {
-        require(isPauser(_msgSender()), "PauserRole: caller does not have the Pauser role");
-        _;
-    }
-
-    function isPauser(address account) public view returns (bool) {
-        return _pausers.has(account);
-    }
-
-    function addPauser(address account) public onlyPauser {
-        _addPauser(account);
-    }
-
-    function renouncePauser() public {
-        _removePauser(_msgSender());
-    }
-
-    function _addPauser(address account) internal {
-        _pausers.add(account);
-        emit PauserAdded(account);
-    }
-
-    function _removePauser(address account) internal {
-        _pausers.remove(account);
-        emit PauserRemoved(account);
-    }
-}
-
 // import "@openzeppelin/contracts/GSN/Context.sol";
+// import "@openzeppelin/contracts/access/roles/PauserRole.sol";
 /**
  * @dev Contract module which allows children to implement an emergency stop
  * mechanism that can be triggered by an authorized account.
@@ -340,7 +268,7 @@ contract PauserRole is ContextUpgradeable {
  * the functions of your contract. Note that they will not be pausable by
  * simply including this module, only once the modifiers are put in place.
  */
-contract Pausable is PauserRole {
+contract Pausable {
 
     bool private _paused;
 
@@ -355,7 +283,6 @@ contract Pausable is PauserRole {
 }
 
 // SPDX-License-Identifier: MIT
-// import "@openzeppelin/contracts/utils/Address.sol";
 /**
  * @dev Implementation of the {IERC20} interface.
  *
@@ -383,8 +310,7 @@ contract Pausable is PauserRole {
  */
 contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20Upgradeable {
     using SafeMath for uint256;
-    // using Address for address;
-
+    
     mapping(address => uint256) private _balances;
 
     mapping(address => mapping(address => uint256)) private _allowances;
@@ -405,10 +331,10 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * All two of these values are immutable: they can only be set once during
      * construction.
      */
-    // function __ERC20_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
-    //     __Context_init_unchained();
-    //     __ERC20_init_unchained(name_, symbol_, decimals_);
-    // }
+    function __ERC20_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
+        __Context_init_unchained();
+        __ERC20_init_unchained(name_, symbol_, decimals_);
+    }
 
     function __ERC20_init_unchained(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
         _name = name_;
@@ -419,7 +345,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
     /**
      * @dev Returns the name of the token.
      */
-    function name() public view returns (string memory) {
+    function name() external view returns (string memory) {
         return _name;
     }
 
@@ -427,18 +353,18 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * @dev Returns the symbol of the token, usually a shorter version of the
      * name.
      */
-    function symbol() public view returns (string memory) {
+    function symbol() external view returns (string memory) {
         return _symbol;
     }
 
-    function decimals() public view returns (uint8) {
+    function decimals() external view returns (uint8) {
         return _decimals;
     }
 
     /**
      * @dev See {IERC20-totalSupply}.
      */
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() external view returns (uint256) {
         return _totalSupply;
     }
 
@@ -457,7 +383,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * - `recipient` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(address recipient, uint256 amount) public returns (bool) {
+    function transfer(address recipient, uint256 amount) external returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -465,7 +391,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) public view returns (uint256) {
+    function allowance(address owner, address spender) external view returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -476,7 +402,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 amount) public returns (bool) {
+    function approve(address spender, uint256 amount) external returns (bool) {
         _approve(_msgSender(), spender, amount);
         return true;
     }
@@ -498,14 +424,12 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
         address sender,
         address recipient,
         uint256 amount
-    ) public returns (bool) {
+    ) external returns (bool) {
         _transfer(sender, recipient, amount);
 
         uint256 currentAllowance = _allowances[sender][_msgSender()];
         require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
-        // unchecked {
-            _approve(sender, _msgSender(), currentAllowance - amount);
-        // }
+        _approve(sender, _msgSender(), currentAllowance - amount);
 
         return true;
     }
@@ -522,7 +446,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue) external returns (bool) {
         _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
         return true;
     }
@@ -541,7 +465,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
+    function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) {
         uint256 currentAllowance = _allowances[_msgSender()][spender];
         require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
         // unchecked {
@@ -641,14 +565,14 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
         _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount, "ERC20: burn amount exceeds allowance"));
     }
 
-    function burn(uint256 amount) public {
+    function burn(uint256 amount) external {
         _burn(_msgSender(), amount);
     }
 
     /**
      * @dev See {ERC20-_burnFrom}.
      */
-    function burnFrom(address account, uint256 amount) public {
+    function burnFrom(address account, uint256 amount) external {
         _burnFrom(account, amount);
     }
     /**
@@ -718,7 +642,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
         address to,
         uint256 amount
     ) internal {}
-    uint256[45] private __gap;
+    uint256[50] private __gap;
 }
 
 /**
@@ -803,12 +727,10 @@ library ECDSA {
 }
 
 // SPDX-License-Identifier: MIT
-// import "@openzeppelin/contracts/utils/Address.sol";
 /**
  * @dev Signature verification
  */
 library Validate {
-    // using Address for address;
     using ECDSA for bytes32;
 
     /**
@@ -824,35 +746,69 @@ library Validate {
     }
 }
 
-// SPDX-License-Identifier: MIT
-// import "@openzeppelin/contracts/GSN/Context.sol";
-// import "../abstracts/ERC20.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
-contract GluwaRole is ContextUpgradeable {
-    // using Address for address;
-    using Roles for Roles.Role;
-
-    event GluwaAdded(address indexed account);
-    event GluwaRemoved(address indexed account);
-
-    Roles.Role private _Gluwas;
-
-    // constructor(address sender) public {
-    //     if (!isGluwa(sender)) {
-    //         _addGluwa(sender);
-    //     }
-    // } 
-    // function __GluwaRole_init(address sender) internal initializer {
-    //     __Context_init_unchained();
-    //     __GluwaRole_init_unchained(sender);
-    // }
-
-    function __GluwaRole_init_unchained(address sender) internal initializer {
-        if (!isGluwa(sender)) {
-            _addGluwa(sender);
-        }
+/**
+ * @title Roles
+ * @dev Library for managing addresses assigned to a Role.
+ */
+library Roles {
+    struct Role {
+        mapping (address => bool) bearer;
     }
 
+    /**
+     * @dev Give an account access to this role.
+     */
+    function add(Role storage role, address account) internal {
+        require(!has(role, account), "Roles: account already has role");
+        role.bearer[account] = true;
+    }
+
+    /**
+     * @dev Remove an account's access to this role.
+     */
+    function remove(Role storage role, address account) internal {
+        require(has(role, account), "Roles: account does not have role");
+        role.bearer[account] = false;
+    }
+
+    /**
+     * @dev Check if an account has this role.
+     * @return bool
+     */
+    function has(Role storage role, address account) internal view returns (bool) {
+        require(account != address(0), "Roles: account is the zero address");
+        return role.bearer[account];
+    }
+}
+
+// SPDX-License-Identifier: MIT
+contract AllRoles is ContextUpgradeable {
+    // using Address for address;
+    using Roles for Roles.Role;
+    
+    event GluwaAdded(address indexed account);
+    event GluwaRemoved(address indexed account);
+    event LuniverseAdded(address indexed account);
+    event LuniverseRemoved(address indexed account);
+
+    Roles.Role private _Luniverses;
+    Roles.Role private _Gluwas;
+
+    function __Roles_init() internal initializer {
+        __Context_init_unchained();
+        __AllRoles_init_unchained();
+    }
+
+    function __AllRoles_init_unchained() internal initializer {
+    }
+    modifier onlyLuniverse() {
+        require(isLuniverse(_msgSender()), "LuniverseRole: caller does not have the Luniverse role");
+        _;
+    }
+
+    function isLuniverse(address account) public view returns (bool) {
+        return _Luniverses.has(account);
+    }
     modifier onlyGluwa() {
         require(isGluwa(_msgSender()), "GluwaRole: caller does not have the Gluwa role");
         _;
@@ -861,53 +817,55 @@ contract GluwaRole is ContextUpgradeable {
     function isGluwa(address account) public view returns (bool) {
         return _Gluwas.has(account);
     }
-
-    function addGluwa(address account) public onlyGluwa {
-        _addGluwa(account);
+    function addRole(address account, bool isGluwa) public onlyLuniverse {
+        _addRole(account, isGluwa);
     }
 
-    function removeGluwa(address account) public onlyGluwa {
-        _removeGluwa(account);
+    function removeRole(address account, bool isGluwa) public onlyLuniverse {
+        _removeRole(account, isGluwa);
     }
 
-    function renounceGluwa() public {
-        _removeGluwa(_msgSender());
+    function renounceRole(bool isGluwa) public {
+        _removeRole(_msgSender(), isGluwa);
     }
 
-    function _addGluwa(address account) internal {
-        _Gluwas.add(account);
-        emit GluwaAdded(account);
+    function _addRole(address account, bool isGluwa) internal {
+        if(isGluwa){
+            _Gluwas.add(account);
+            emit GluwaAdded(account);
+        }else{
+            _Luniverses.add(account);
+            emit LuniverseAdded(account);
+        }
     }
 
-    function _removeGluwa(address account) internal {
-        _Gluwas.remove(account);
-        emit GluwaRemoved(account);
+    function _removeRole(address account, bool isGluwa) internal {
+        if(isGluwa){
+            _Gluwas.remove(account);
+            emit GluwaRemoved(account);
+        }else{
+            _Luniverses.remove(account);
+            emit LuniverseRemoved(account);
+        }
     }
     uint256[50] private __gap;
-
 }
 
 // SPDX-License-Identifier: MIT
-// import "@openzeppelin/contracts/GSN/Context.sol";
-// import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
-// import "./BeforeTransferERC20.sol";
 /**
  * @dev Extension of {ERC20} that allows users to send ETHless transfer by hiring a transaction relayer to pay the
  * gas fee for them. The relayer gets paid in this ERC20 token for `fee`.
  */
-contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, GluwaRole {
-    // using Address for address;
-    // using ECDSA for bytes32;
+contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, AllRoles {
 
     mapping (address => mapping (uint256 => bool)) private _usedNonces;
 
-    // function __ETHlessTransfer_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
-    //     __Context_init_unchained();
-    //     __ERC20_init_unchained(name_, symbol_, decimals_);
-    //     __GluwaRole_init_unchained(msg.sender);
-    //     __ETHlessTransfer_init_unchained();
-    // }
+    function __ETHlessTransfer_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
+        __Context_init_unchained();
+        __ERC20_init_unchained(name_, symbol_, decimals_);
+        __AllRoles_init_unchained();
+        __ETHlessTransfer_init_unchained();
+    }
 
     function __ETHlessTransfer_init_unchained() internal initializer {
     }
@@ -934,6 +892,7 @@ contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, GluwaRole {
         Validate.validateSignature(hash, sender, sig);
 
         _collect(sender, fee);
+        // _transfer(sender, _msgSender(), fee);
         _transfer(sender, recipient, amount);
 
         return true;
@@ -957,70 +916,8 @@ contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, GluwaRole {
 }
 
 // SPDX-License-Identifier: MIT
-// import "@openzeppelin/contracts/GSN/Context.sol";
-// import "../abstracts/ERC20.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
-contract LuniverseRole is ContextUpgradeable {
-    // using Address for address;
-    using Roles for Roles.Role;
-
-    event LuniverseAdded(address indexed account);
-    event LuniverseRemoved(address indexed account);
-
-    Roles.Role private _Luniverses;
-
-    // constructor(address sender) public {
-    //     if (!isLuniverse(sender)) {
-    //         _addLuniverse(sender);
-    //     }
-    // }
-    // function __LuniverseRole_init(address sender) internal initializer {
-    //     __Context_init_unchained();
-    //     __LuniverseRole_init_unchained(sender);
-    // }
-
-    function __LuniverseRole_init_unchained(address sender) internal initializer {
-        if (!isLuniverse(sender)) {
-            _addLuniverse(sender);
-        }
-    }
-    modifier onlyLuniverse() {
-        require(isLuniverse(_msgSender()), "LuniverseRole: caller does not have the Luniverse role");
-        _;
-    }
-
-    function isLuniverse(address account) public view returns (bool) {
-        return _Luniverses.has(account);
-    }
-
-    function addLuniverse(address account) public onlyLuniverse {
-        _addLuniverse(account);
-    }
-
-    function removeLuniverse(address account) public onlyLuniverse {
-        _removeLuniverse(account);
-    }
-
-    function renounceLuniverse() public {
-        _removeLuniverse(_msgSender());
-    }
-
-    function _addLuniverse(address account) internal {
-        _Luniverses.add(account);
-        emit LuniverseAdded(account);
-    }
-
-    function _removeLuniverse(address account) internal {
-        _Luniverses.remove(account);
-        emit LuniverseRemoved(account);
-    }
-    uint256[50] private __gap;
-}
-
-// SPDX-License-Identifier: MIT
-// import "@openzeppelin/contracts/GSN/Context.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
-// import "./BeforeTransferERC20.sol";
+// import "../roles/GluwaRole.sol";
+// import "../roles/LuniverseRole.sol";
 /**
  * @dev Extension of {ERC20} that allows users to 2-way peg tokens from a sidechain of Luniverse, the Ethereum.
  * When the fund is sent to a gateway contract on Ethereum, either Gluwa or Luniverse can add a `peg`.
@@ -1029,7 +926,7 @@ contract LuniverseRole is ContextUpgradeable {
  * Also, only Gluwa or Luniverse can process approved pegs.
  * You cannot process a peg more than once.
  */
-contract Peggable is ERC20Upgradeable, GluwaRole, LuniverseRole {
+contract Peggable is ERC20Upgradeable, AllRoles {
     // using Address for address;
 
     struct Peg {
@@ -1039,13 +936,12 @@ contract Peggable is ERC20Upgradeable, GluwaRole, LuniverseRole {
         bool _luniverseApproved;
         bool _processed;
     }
-    // function __Peggable_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
-    //     __Context_init_unchained();
-    //     __ERC20_init_unchained(name_, symbol_, decimals_);
-    //     __GluwaRole_init_unchained(msg.sender);
-    //     __LuniverseRole_init_unchained(msg.sender);
-    //     __Peggable_init_unchained();
-    // }
+    function __Peggable_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
+        __Context_init_unchained();
+        __ERC20_init_unchained(name_, symbol_, decimals_);
+        __AllRoles_init_unchained();
+        __Peggable_init_unchained();
+    }
 
     function __Peggable_init_unchained() internal initializer {
     }
@@ -1162,11 +1058,11 @@ contract Reservable is ERC20Upgradeable {
         uint256 _expiryBlockNum;
         ReservationStatus _status;
     }
-    // function __Reservable_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
-    //     __Context_init_unchained();
-    //     __ERC20_init_unchained(name_, symbol_, decimals_);
-    //     __Reservable_init_unchained();
-    // }
+    function __Reservable_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
+        __Context_init_unchained();
+        __ERC20_init_unchained(name_, symbol_, decimals_);
+        __Reservable_init_unchained();
+    }
 
     function __Reservable_init_unchained() internal initializer {
     }
@@ -1283,24 +1179,22 @@ contract Reservable is ERC20Upgradeable {
 }
 
 // SPDX-License-Identifier: MIT
-// import "./abstracts/ERC20Pausable.sol";
 /**
  * @dev Extension of {ERC20} that adds a set of accounts with the {MinterRole},
  * which have permission to mint (create) new tokens as they see fit.
  *
  * At construction, the deployer of the contract is the only minter.
  */
-contract LuniverseGluwacoin is Initializable ,GluwaRole, LuniverseRole, ETHlessTransfer, Peggable, Reservable {
+contract LuniverseGluwacoin is Initializable ,AllRoles, ETHlessTransfer, Peggable, Reservable {
     function initialize(string memory name, string memory symbol, uint8 decimals) public {
         __Context_init_unchained();
-        __GluwaRole_init_unchained(msg.sender);
-        __LuniverseRole_init_unchained(msg.sender);
+        __AllRoles_init_unchained();
         __ERC20_init_unchained(name, symbol, decimals);
         __ETHlessTransfer_init_unchained();
         __Peggable_init_unchained();
         __Reservable_init_unchained();
-        _addGluwa(msg.sender);
-        _addLuniverse(msg.sender);
+        _addRole(_msgSender(), true);
+        _addRole(_msgSender(), false);
     }
 
     uint256[50] private __gap;
