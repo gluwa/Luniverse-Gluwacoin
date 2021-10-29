@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-import "./abstracts/ERC20Pausable.sol";
-import "./abstracts/Burnable.sol";
 import "./abstracts/ETHlessTransfer.sol";
 import "./abstracts/Peggable.sol";
 import "./abstracts/Reservable.sol";
-import "./roles/GluwaRole.sol";
-import "./roles/LuniverseRole.sol";
+import "./abstracts/Pausable.sol";
+import "./abstracts/Initializable.sol";
+import "./roles/AllRoles.sol";
 
 /**
  * @dev Extension of {ERC20} that adds a set of accounts with the {MinterRole},
@@ -15,7 +14,19 @@ import "./roles/LuniverseRole.sol";
  *
  * At construction, the deployer of the contract is the only minter.
  */
-contract LuniverseGluwacoin is ERC20Pausable, GluwaRole, LuniverseRole, Burnable, Peggable, Reservable, ETHlessTransfer {
-    constructor(string memory name, string memory symbol, uint8 decimals) public
-    BeforeTransferERC20(name, symbol, decimals) GluwaRole(msg.sender) LuniverseRole(msg.sender) {}
+contract LuniverseGluwacoin is Initializable ,AllRoles, ETHlessTransfer, Peggable, Reservable {
+    function initialize(string memory name, string memory symbol, uint8 decimals) public {
+        __Context_init_unchained();
+        __AllRoles_init_unchained();
+        __ERC20_init_unchained(name, symbol, decimals);
+        __ETHlessTransfer_init_unchained();
+        __Peggable_init_unchained();
+        __Reservable_init_unchained();
+        _addRole(_msgSender(), true);
+        _addRole(_msgSender(), false);
+    }
+
+    uint256[50] private __gap;
+
+ 
 }

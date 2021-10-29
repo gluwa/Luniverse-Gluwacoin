@@ -2,74 +2,40 @@
 
 // import "@openzeppelin/contracts/GSN/Context.sol";
 // import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-// // import "@openzeppelin/contracts/math/SafeMath.sol";
-// import "./ERC20Upgradeable.sol";
+// import "./SafeMath.sol";
+
 // /**
-//  * @dev @openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol with `_beforeTransfer`
+//  * @dev Implementation of the {IERC20} interface.
 //  *
-//  * Changes made to `_transfer`, `_mint`, and `_burn` to add `_beforeTransfer`.
-//  */ 
-// contract BeforeTransferERC20 is Context, ERC20Upgradeable {
+//  * This implementation is agnostic to the way tokens are created. This means
+//  * that a supply mechanism has to be added in a derived contract using {_mint}.
+//  * For a generic mechanism see {ERC20Mintable}.
+//  *
+//  * TIP: For a detailed writeup see our guide
+//  * https://forum.zeppelin.solutions/t/how-to-implement-erc20-supply-mechanisms/226[How
+//  * to implement supply mechanisms].
+//  *
+//  * We have followed general OpenZeppelin guidelines: functions revert instead
+//  * of returning `false` on failure. This behavior is nonetheless conventional
+//  * and does not conflict with the expectations of ERC20 applications.
+//  *
+//  * Additionally, an {Approval} event is emitted on calls to {transferFrom}.
+//  * This allows applications to reconstruct the allowance for all accounts just
+//  * by listening to said events. Other implementations of the EIP may not emit
+//  * these events, as it isn't required by the specification.
+//  *
+//  * Finally, the non-standard {decreaseAllowance} and {increaseAllowance}
+//  * functions have been added to mitigate the well-known issues around setting
+//  * allowances. See {IERC20-approve}.
+//  */
+// contract ERC20 is Context, IERC20 {
 //     using SafeMath for uint256;
 
-//     event Burnt(address indexed _burnFrom, uint256 _value);
-
 //     mapping (address => uint256) private _balances;
+
 //     mapping (address => mapping (address => uint256)) private _allowances;
 
 //     uint256 private _totalSupply;
-
-//     string private _name;
-//     string private _symbol;
-//     uint8 private _decimals;
-
-//     /**
-//      * @dev Sets the values for `name`, `symbol`, and `decimals`. All three of
-//      * these values are immutable: they can only be set once during
-//      * construction.
-//      */
-//     // function __BeforeTransferERC20_init(string memory name, string memory symbol, uint8 decimals) public {
-//     //    __Context_init_unchained();
-//     //    __ERC20_init_unchained(name, symbol);
-//     //    _BeforeTransferERC20_init_unchained(name,symbol,decimals);
-//     // }
-//     // function __BeforeTransferERC20_init_unchained(string memory name, string memory symbol, uint8 decimals) public {
-//     //     _name = name;
-//     //     _symbol = symbol;
-//     //     _decimals = decimals;
-//     // }
-
-//     /**
-//      * @dev Returns the name of the token.
-//      */
-//     function name() public view returns (string memory) {
-//         return _name;
-//     }
-
-//     /**
-//      * @dev Returns the symbol of the token, usually a shorter version of the
-//      * name.
-//      */
-//     function symbol() public view returns (string memory) {
-//         return _symbol;
-//     }
-
-//     /**
-//      * @dev Returns the number of decimals used to get its user representation.
-//      * For example, if `decimals` equals `2`, a balance of `505` tokens should
-//      * be displayed to a user as `5,05` (`505 / 10 ** 2`).
-//      *
-//      * Tokens usually opt for a value of 18, imitating the relationship between
-//      * Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is
-//      * called.
-//      *
-//      * NOTE: This information is only used for _display_ purposes: it in
-//      * no way affects any of the arithmetic of the contract, including
-//      * {IERC20-balanceOf} and {IERC20-transfer}.
-//      */
-//     function decimals() public view returns (uint8) {
-//         return _decimals;
-//     }
 
 //     /**
 //      * @dev See {IERC20-totalSupply}.
@@ -189,8 +155,6 @@
 //         require(sender != address(0), "ERC20: transfer from the zero address");
 //         require(recipient != address(0), "ERC20: transfer to the zero address");
 
-//         _beforeTokenTransfer(sender, recipient, amount);
-
 //         _balances[sender] = _balances[sender].sub(amount, "ERC20: transfer amount exceeds balance");
 //         _balances[recipient] = _balances[recipient].add(amount);
 //         emit Transfer(sender, recipient, amount);
@@ -207,8 +171,6 @@
 //      */
 //     function _mint(address account, uint256 amount) internal {
 //         require(account != address(0), "ERC20: mint to the zero address");
-
-//         _beforeTokenTransfer(address(0), account, amount);
 
 //         _totalSupply = _totalSupply.add(amount);
 //         _balances[account] = _balances[account].add(amount);
@@ -229,11 +191,8 @@
 //     function _burn(address account, uint256 amount) internal {
 //         require(account != address(0), "ERC20: burn from the zero address");
 
-//         _beforeTokenTransfer(account, address(0), amount);
-
 //         _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
 //         _totalSupply = _totalSupply.sub(amount);
-//         emit Burnt(_msgSender(), amount);
 //         emit Transfer(account, address(0), amount);
 //     }
 
@@ -268,22 +227,4 @@
 //         _burn(account, amount);
 //         _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount, "ERC20: burn amount exceeds allowance"));
 //     }
-
-//     /**
-//      * @dev Hook that is called before any transfer of tokens. This includes
-//      * minting and burning.
-//      *
-//      * Calling conditions:
-//      *
-//      * - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
-//      * will be to transferred to `to`.
-//      * - when `from` is zero, `amount` tokens will be minted for `to`.
-//      * - when `to` is zero, `amount` of ``from``'s tokens will be burned.
-//      * - `from` and `to` are never both zero.
-//      *
-//      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
-//      */
-//     function _beforeTokenTransfer(address from, address to, uint256 amount) internal { }
-//     uint256[50] private __gap;
-
 // }

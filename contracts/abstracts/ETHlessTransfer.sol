@@ -1,23 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-import "@openzeppelin/contracts/GSN/Context.sol";
-import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-
-import "./BeforeTransferERC20.sol";
+import "./ContextUpgradeable.sol";
+import "./ERC20Upgradeable.sol";
 import "../Validate.sol";
-import "../roles/GluwaRole.sol";
+import "../roles/AllRoles.sol";
 
 /**
  * @dev Extension of {ERC20} that allows users to send ETHless transfer by hiring a transaction relayer to pay the
  * gas fee for them. The relayer gets paid in this ERC20 token for `fee`.
  */
-contract ETHlessTransfer is Context, BeforeTransferERC20, GluwaRole {
-    using Address for address;
-    using ECDSA for bytes32;
+contract ETHlessTransfer is ContextUpgradeable, ERC20Upgradeable, AllRoles {
 
     mapping (address => mapping (uint256 => bool)) private _usedNonces;
+
+    function __ETHlessTransfer_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
+        __Context_init_unchained();
+        __ERC20_init_unchained(name_, symbol_, decimals_);
+        __AllRoles_init_unchained();
+        __ETHlessTransfer_init_unchained();
+    }
+
+    function __ETHlessTransfer_init_unchained() internal initializer {
+    }
 
     /**
      * @dev Moves `amount` tokens from the `sender`'s account to `recipient`
@@ -60,4 +65,5 @@ contract ETHlessTransfer is Context, BeforeTransferERC20, GluwaRole {
     function _collect(address sender, uint256 amount) internal {
         _transfer(sender, _msgSender(), amount);
     }
+    uint256[50] private __gap;
 }

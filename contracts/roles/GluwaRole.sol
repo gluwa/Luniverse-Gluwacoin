@@ -2,12 +2,13 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/access/Roles.sol";
-import "@openzeppelin/contracts/GSN/Context.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
+// import "@openzeppelin/contracts/GSN/Context.sol";
+import "../abstracts/ContextUpgradeable.sol";
+// import "../abstracts/ERC20.sol";
+// import "@openzeppelin/contracts/utils/Address.sol";
 
-contract GluwaRole is Context {
-    using Address for address;
+contract GluwaRole is ContextUpgradeable {
+    // using Address for address;
     using Roles for Roles.Role;
 
     event GluwaAdded(address indexed account);
@@ -15,7 +16,17 @@ contract GluwaRole is Context {
 
     Roles.Role private _Gluwas;
 
-    constructor(address sender) public {
+    // constructor(address sender) public {
+    //     if (!isGluwa(sender)) {
+    //         _addGluwa(sender);
+    //     }
+    // } 
+    function __GluwaRole_init(address sender) internal initializer {
+        __Context_init_unchained();
+        __GluwaRole_init_unchained(sender);
+    }
+
+    function __GluwaRole_init_unchained(address sender) internal initializer {
         if (!isGluwa(sender)) {
             _addGluwa(sender);
         }
@@ -51,4 +62,6 @@ contract GluwaRole is Context {
         _Gluwas.remove(account);
         emit GluwaRemoved(account);
     }
+    uint256[50] private __gap;
+
 }

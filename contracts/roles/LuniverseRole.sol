@@ -2,12 +2,14 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/access/Roles.sol";
-import "@openzeppelin/contracts/GSN/Context.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
+// import "@openzeppelin/contracts/GSN/Context.sol";
+import "../abstracts/ContextUpgradeable.sol";
 
-contract LuniverseRole is Context {
-    using Address for address;
+// import "../abstracts/ERC20.sol";
+// import "@openzeppelin/contracts/utils/Address.sol";
+
+contract LuniverseRole is ContextUpgradeable {
+    // using Address for address;
     using Roles for Roles.Role;
 
     event LuniverseAdded(address indexed account);
@@ -15,12 +17,21 @@ contract LuniverseRole is Context {
 
     Roles.Role private _Luniverses;
 
-    constructor(address sender) public {
+    // constructor(address sender) public {
+    //     if (!isLuniverse(sender)) {
+    //         _addLuniverse(sender);
+    //     }
+    // }
+    function __LuniverseRole_init(address sender) internal initializer {
+        __Context_init_unchained();
+        __LuniverseRole_init_unchained(sender);
+    }
+
+    function __LuniverseRole_init_unchained(address sender) internal initializer {
         if (!isLuniverse(sender)) {
             _addLuniverse(sender);
         }
     }
-
     modifier onlyLuniverse() {
         require(isLuniverse(_msgSender()), "LuniverseRole: caller does not have the Luniverse role");
         _;
@@ -51,4 +62,5 @@ contract LuniverseRole is Context {
         _Luniverses.remove(account);
         emit LuniverseRemoved(account);
     }
+    uint256[50] private __gap;
 }
