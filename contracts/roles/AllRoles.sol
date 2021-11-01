@@ -15,7 +15,7 @@ contract AllRoles is ContextUpgradeable {
     Roles.Role private _Luniverses;
     Roles.Role private _Gluwas;
 
-    function __Roles_init() internal initializer {
+    function __AllRoles_init() internal initializer {
         __Context_init_unchained();
         __AllRoles_init_unchained();
     }
