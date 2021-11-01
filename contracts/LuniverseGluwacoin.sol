@@ -22,8 +22,8 @@ contract LuniverseGluwacoin is Initializable ,AllRoles, ETHlessTransfer, Peggabl
         __ETHlessTransfer_init_unchained();
         __Peggable_init_unchained();
         __Reservable_init_unchained();
-        _addRole(_msgSender(), true);
-        _addRole(_msgSender(), false);
+        _addRole(_msgSender(), "Gluwa");
+        _addRole(_msgSender(), "Luniverse");
     }
 
     uint256[50] private __gap;

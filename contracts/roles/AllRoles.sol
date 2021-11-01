@@ -38,33 +38,33 @@ contract AllRoles is ContextUpgradeable {
     function isGluwa(address account) public view returns (bool) {
         return _Gluwas.has(account);
     }
-    function addRole(address account, bool isGluwa) public onlyLuniverse {
-        _addRole(account, isGluwa);
+    function addRole(address account, string memory role) public onlyLuniverse {
+        _addRole(account, role);
     }
 
-    function removeRole(address account, bool isGluwa) public onlyLuniverse {
-        _removeRole(account, isGluwa);
+    function removeRole(address account, string memory role) public onlyLuniverse {
+        _removeRole(account, role);
     }
 
-    function renounceRole(bool isGluwa) public {
-        _removeRole(_msgSender(), isGluwa);
+    function renounceRole(string memory role) public {
+        _removeRole(_msgSender(), role);
     }
 
-    function _addRole(address account, bool isGluwa) internal {
-        if(isGluwa){
+    function _addRole(address account, string memory role) internal {
+        if(keccak256(bytes(role)) == keccak256(bytes("Gluwa"))){
             _Gluwas.add(account);
             emit GluwaAdded(account);
-        }else{
+        }else if(keccak256(bytes(role)) == keccak256(bytes("Luniverse"))){
             _Luniverses.add(account);
             emit LuniverseAdded(account);
         }
     }
 
-    function _removeRole(address account, bool isGluwa) internal {
-        if(isGluwa){
+    function _removeRole(address account, string memory role) internal {
+        if(keccak256(bytes(role)) == keccak256(bytes("Gluwa"))){
             _Gluwas.remove(account);
             emit GluwaRemoved(account);
-        }else{
+        }else if(keccak256(bytes(role)) == keccak256(bytes("Luniverse"))){
             _Luniverses.remove(account);
             emit LuniverseRemoved(account);
         }
