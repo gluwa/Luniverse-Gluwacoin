@@ -170,10 +170,10 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(address spender, uint256 addedValue) external returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
-        return true;
-    }
+    // function increaseAllowance(address spender, uint256 addedValue) external returns (bool) {
+    //     _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
+    //     return true;
+    // }
 
     /**
      * @dev Atomically decreases the allowance granted to `spender` by the caller.
@@ -189,15 +189,15 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) {
-        uint256 currentAllowance = _allowances[_msgSender()][spender];
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
-        // unchecked {
-            _approve(_msgSender(), spender, currentAllowance - subtractedValue);
-        // }
+    // function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) {
+    //     uint256 currentAllowance = _allowances[_msgSender()][spender];
+    //     require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+    //     // unchecked {
+    //         _approve(_msgSender(), spender, currentAllowance - subtractedValue);
+    //     // }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     /**
      * @dev Moves `amount` of tokens from `sender` to `recipient`.

@@ -428,10 +428,10 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(address spender, uint256 addedValue) external returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
-        return true;
-    }
+    // function increaseAllowance(address spender, uint256 addedValue) external returns (bool) {
+    //     _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
+    //     return true;
+    // }
 
     /**
      * @dev Atomically decreases the allowance granted to `spender` by the caller.
@@ -447,15 +447,15 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) {
-        uint256 currentAllowance = _allowances[_msgSender()][spender];
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
-        // unchecked {
-            _approve(_msgSender(), spender, currentAllowance - subtractedValue);
-        // }
+    // function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) {
+    //     uint256 currentAllowance = _allowances[_msgSender()][spender];
+    //     require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+    //     // unchecked {
+    //         _approve(_msgSender(), spender, currentAllowance - subtractedValue);
+    //     // }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     /**
      * @dev Moves `amount` of tokens from `sender` to `recipient`.
@@ -525,38 +525,38 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * - `account` cannot be the zero address.
      * - `account` must have at least `amount` tokens.
      */
-    function _burn(address account, uint256 amount) internal {
-        require(account != address(0), "ERC20: burn from the zero address");
+    // function _burn(address account, uint256 amount) internal {
+    //     require(account != address(0), "ERC20: burn from the zero address");
 
-        _beforeTokenTransfer(account, address(0), amount);
+    //     _beforeTokenTransfer(account, address(0), amount);
 
-        uint256 accountBalance = _balances[account];
-        require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
-        // unchecked {
-            _balances[account] = accountBalance - amount;
-        // }
-        _totalSupply -= amount;
-        emit Burnt(_msgSender(), amount);
+    //     uint256 accountBalance = _balances[account];
+    //     require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
+    //     // unchecked {
+    //         _balances[account] = accountBalance - amount;
+    //     // }
+    //     _totalSupply -= amount;
+    //     emit Burnt(_msgSender(), amount);
 
-        emit Transfer(account, address(0), amount);
+    //     emit Transfer(account, address(0), amount);
 
-        _afterTokenTransfer(account, address(0), amount);
-    }
-    function _burnFrom(address account, uint256 amount) internal {
-        _burn(account, amount); 
-        _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount));
-    }
+    //     _afterTokenTransfer(account, address(0), amount);
+    // }
+    // function _burnFrom(address account, uint256 amount) internal {
+    //     _burn(account, amount); 
+    //     _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount));
+    // }
 
-    function burn(uint256 amount) external {
-        _burn(_msgSender(), amount);
-    }
+    // function burn(uint256 amount) external {
+    //     _burn(_msgSender(), amount);
+    // }
 
-    /**
-     * @dev See {ERC20-_burnFrom}.
-     */
-    function burnFrom(address account, uint256 amount) external {
-        _burnFrom(account, amount);
-    }
+    // /**
+    //  * @dev See {ERC20-_burnFrom}.
+    //  */
+    // function burnFrom(address account, uint256 amount) external {
+    //     _burnFrom(account, amount);
+    // }
     /**
      * @dev Sets `amount` as the allowance of `spender` over the `owner` s tokens.
      *
@@ -775,7 +775,7 @@ contract AllRoles is ContextUpgradeable {
     Roles.Role private _Luniverses;
     Roles.Role private _Gluwas;
 
-    function __Roles_init() internal initializer {
+    function __AllRoles_init() internal initializer {
         __Context_init_unchained();
         __AllRoles_init_unchained();
     }
@@ -798,33 +798,33 @@ contract AllRoles is ContextUpgradeable {
     function isGluwa(address account) public view returns (bool) {
         return _Gluwas.has(account);
     }
-    function addRole(address account, string memory role) public onlyLuniverse {
+    function addRole(address account, bytes32 role) public onlyLuniverse {
         _addRole(account, role);
     }
 
-    function removeRole(address account, string memory role) public onlyLuniverse {
+    function removeRole(address account, bytes32 role) public onlyLuniverse {
         _removeRole(account, role);
     }
 
-    function renounceRole(string memory role) public {
+    function renounceRole(bytes32 role) public {
         _removeRole(_msgSender(), role);
     }
 
-    function _addRole(address account, string memory role) internal {
-        if(keccak256(bytes(role)) == keccak256(bytes("Gluwa"))){
+    function _addRole(address account, bytes32 role) internal {
+        if(role == keccak256(bytes("Gluwa"))){
             _Gluwas.add(account);
             emit GluwaAdded(account);
-        }else if(keccak256(bytes(role)) == keccak256(bytes("Luniverse"))){
+        }else if(role == keccak256(bytes("Luniverse"))){
             _Luniverses.add(account);
             emit LuniverseAdded(account);
         }
     }
 
-    function _removeRole(address account, string memory role) internal {
-        if(keccak256(bytes(role)) == keccak256(bytes("Gluwa"))){
+    function _removeRole(address account, bytes32 role) internal {
+        if(role == keccak256(bytes("Gluwa"))){
             _Gluwas.remove(account);
             emit GluwaRemoved(account);
-        }else if(keccak256(bytes(role)) == keccak256(bytes("Luniverse"))){
+        }else if(role == keccak256(bytes("Luniverse"))){
             _Luniverses.remove(account);
             emit LuniverseRemoved(account);
         }
@@ -1176,8 +1176,12 @@ contract LuniverseGluwacoin is Initializable ,AllRoles, ETHlessTransfer, Peggabl
         __ETHlessTransfer_init_unchained();
         __Peggable_init_unchained();
         __Reservable_init_unchained();
-        _addRole(_msgSender(), "Gluwa");
-        _addRole(_msgSender(), "Luniverse");
+        _addRole(_msgSender(), keccak256("Gluwa"));
+        _addRole(_msgSender(), keccak256("Luniverse"));
+    }
+    string constant public newVar="New Variable";
+    function newFunc()public view returns(string memory){
+        return "New Function";
     }
     uint256[50] private __gap;
 
