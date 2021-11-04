@@ -16,17 +16,18 @@ import "./roles/AllRoles.sol";
  */
 contract LuniverseGluwacoin is Initializable ,AllRoles, ETHlessTransfer, Peggable, Reservable {
     function initialize(string memory name, string memory symbol, uint8 decimals) public {
+        __LuniverseGluwacoin_init_unchained(name, symbol, decimals);
+    }
+    function __LuniverseGluwacoin_init_unchained(string memory name, string memory symbol, uint8 decimals)internal initializer{
         __Context_init_unchained();
         __AllRoles_init_unchained();
         __ERC20_init_unchained(name, symbol, decimals);
         __ETHlessTransfer_init_unchained();
         __Peggable_init_unchained();
         __Reservable_init_unchained();
-        _addRole(_msgSender(), true);
-        _addRole(_msgSender(), false);
+        _addRole(_msgSender(), keccak256("Gluwa"));
+        _addRole(_msgSender(), keccak256("Luniverse"));
     }
-
     uint256[50] private __gap;
 
- 
 }

@@ -15,7 +15,7 @@ contract AllRoles is ContextUpgradeable {
     Roles.Role private _Luniverses;
     Roles.Role private _Gluwas;
 
-    function __Roles_init() internal initializer {
+    function __AllRoles_init() internal initializer {
         __Context_init_unchained();
         __AllRoles_init_unchained();
     }
@@ -38,33 +38,33 @@ contract AllRoles is ContextUpgradeable {
     function isGluwa(address account) public view returns (bool) {
         return _Gluwas.has(account);
     }
-    function addRole(address account, bool isGluwa) public onlyLuniverse {
-        _addRole(account, isGluwa);
+    function addRole(address account, bytes32 role) public onlyLuniverse {
+        _addRole(account, role);
     }
 
-    function removeRole(address account, bool isGluwa) public onlyLuniverse {
-        _removeRole(account, isGluwa);
+    function removeRole(address account, bytes32 role) public onlyLuniverse {
+        _removeRole(account, role);
     }
 
-    function renounceRole(bool isGluwa) public {
-        _removeRole(_msgSender(), isGluwa);
+    function renounceRole(bytes32 role) public {
+        _removeRole(_msgSender(), role);
     }
 
-    function _addRole(address account, bool isGluwa) internal {
-        if(isGluwa){
+    function _addRole(address account, bytes32 role) internal {
+        if(role == keccak256(bytes("Gluwa"))){
             _Gluwas.add(account);
             emit GluwaAdded(account);
-        }else{
+        }else if(role == keccak256(bytes("Luniverse"))){
             _Luniverses.add(account);
             emit LuniverseAdded(account);
         }
     }
 
-    function _removeRole(address account, bool isGluwa) internal {
-        if(isGluwa){
+    function _removeRole(address account, bytes32 role) internal {
+        if(role == keccak256(bytes("Gluwa"))){
             _Gluwas.remove(account);
             emit GluwaRemoved(account);
-        }else{
+        }else if(role == keccak256(bytes("Luniverse"))){
             _Luniverses.remove(account);
             emit LuniverseRemoved(account);
         }
