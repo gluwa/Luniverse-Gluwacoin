@@ -21,15 +21,12 @@ contract GluwaRole is ContextUpgradeable {
     //         _addGluwa(sender);
     //     }
     // } 
-    function __GluwaRole_init(address sender) internal initializer {
+    function __GluwaRole_init() internal initializer {
         __Context_init_unchained();
-        __GluwaRole_init_unchained(sender);
+        __GluwaRole_init_unchained();
     }
 
-    function __GluwaRole_init_unchained(address sender) internal initializer {
-        if (!isGluwa(sender)) {
-            _addGluwa(sender);
-        }
+    function __GluwaRole_init_unchained() internal initializer {
     }
 
     modifier onlyGluwa() {

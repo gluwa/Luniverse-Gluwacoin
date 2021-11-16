@@ -22,15 +22,12 @@ contract LuniverseRole is ContextUpgradeable {
     //         _addLuniverse(sender);
     //     }
     // }
-    function __LuniverseRole_init(address sender) internal initializer {
+    function __LuniverseRole_init() internal initializer {
         __Context_init_unchained();
-        __LuniverseRole_init_unchained(sender);
+        __LuniverseRole_init_unchained();
     }
 
-    function __LuniverseRole_init_unchained(address sender) internal initializer {
-        if (!isLuniverse(sender)) {
-            _addLuniverse(sender);
-        }
+    function __LuniverseRole_init_unchained() internal initializer {
     }
     modifier onlyLuniverse() {
         require(isLuniverse(_msgSender()), "LuniverseRole: caller does not have the Luniverse role");
