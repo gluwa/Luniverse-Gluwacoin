@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-// import "@openzeppelin/contracts/math/SafeMath.sol";
-// import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
-
 import "./BeforeTransferERC20.sol";
 import "./ERC20Upgradeable.sol";
 import "../Validate.sol";
@@ -16,8 +12,6 @@ import "../Validate.sol";
  * the fund back to the `sender`.
  */
 contract Reservable is BeforeTransferERC20 {
-    // using Address for address;
-    // using ECDSA for bytes32;
 
     enum ReservationStatus {
         Active,

@@ -33,8 +33,5 @@ contract LuniverseGluwacoin is Initializable,ERC20Pausable ,GluwaRole, Luniverse
         _addLuniverse(_msgSender());
     }
     uint256[50] private __gap;
-    string public constant newVar="New Variable";
-    function newFunc()public view returns(string memory){
-        return "New Function";
-    }
+
 }
