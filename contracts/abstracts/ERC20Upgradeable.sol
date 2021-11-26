@@ -41,21 +41,22 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
 
     string private _name;
     string private _symbol;
-
+    uint8 private _decimals;
     /**
      * @dev Sets the values for {name} and {symbol}.
      *
      * All two of these values are immutable: they can only be set once during
      * construction.
      */
-    function __ERC20_init(string memory name_, string memory symbol_) internal initializer {
+    function __ERC20_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
         __Context_init_unchained();
-        __ERC20_init_unchained(name_, symbol_);
+        __ERC20_init_unchained(name_, symbol_,decimals_);
     }
 
-    function __ERC20_init_unchained(string memory name_, string memory symbol_) internal initializer {
+    function __ERC20_init_unchained(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
         _name = name_;
         _symbol = symbol_;
+        _decimals = decimals_;
     }
 
     /**
@@ -72,7 +73,12 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
     function symbol() public view returns (string memory) {
         return _symbol;
     }
-
+    /**
+     * @dev Returns the number of decimals used to get its user representation.
+     */
+    function decimals() public view returns (uint8) {
+        return _decimals;
+    }
     /**
      * @dev See {IERC20-totalSupply}.
      */
@@ -136,7 +142,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
         address sender,
         address recipient,
         uint256 amount
-    ) external returns (bool) {
+    ) public returns (bool) {
         _transfer(sender, recipient, amount);
 
         uint256 currentAllowance = _allowances[sender][_msgSender()];
@@ -272,7 +278,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeabl
         _afterTokenTransfer(account, address(0), amount);
     }
 
-    function burn(uint256 amount) external {
+    function burn(uint256 amount) public {
         _burn(_msgSender(), amount);
     }
 

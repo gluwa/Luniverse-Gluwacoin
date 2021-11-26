@@ -29,7 +29,7 @@ contract BeforeTransferERC20 is ContextUpgradeable, ERC20Upgradeable {
      */
     function __BeforeTransferERC20_init(string memory name, string memory symbol, uint8 decimals) public {
        __Context_init_unchained();
-       __ERC20_init_unchained(name, symbol);
+       __ERC20_init_unchained(name, symbol,decimals);
        __BeforeTransferERC20_init_unchained(name,symbol,decimals);
     }
     function __BeforeTransferERC20_init_unchained(string memory name, string memory symbol, uint8 decimals) public {
