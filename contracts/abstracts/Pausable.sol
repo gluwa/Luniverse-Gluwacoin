@@ -1,8 +1,5 @@
 pragma solidity ^0.5.0;
 
-// import "@openzeppelin/contracts/GSN/Context.sol";
-// import "@openzeppelin/contracts/access/roles/PauserRole.sol";
-
 /**
  * @dev Contract module which allows children to implement an emergency stop
  * mechanism that can be triggered by an authorized account.

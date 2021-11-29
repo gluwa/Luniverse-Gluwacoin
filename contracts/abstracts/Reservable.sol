@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-// import "@openzeppelin/contracts/math/SafeMath.sol";
-// import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
-
-// import "./BeforeTransferERC20.sol";
+import "./BeforeTransferERC20.sol";
 import "./ERC20Upgradeable.sol";
 import "../Validate.sol";
 
@@ -15,9 +11,7 @@ import "../Validate.sol";
  * a `fee`. If the `reserve` gets expired without getting executed, the `sender` or the `executor` can `reclaim`
  * the fund back to the `sender`.
  */
-contract Reservable is ERC20Upgradeable {
-    // using Address for address;
-    // using ECDSA for bytes32;
+contract Reservable is BeforeTransferERC20 {
 
     enum ReservationStatus {
         Active,
@@ -35,7 +29,7 @@ contract Reservable is ERC20Upgradeable {
     }
     function __Reservable_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
         __Context_init_unchained();
-        __ERC20_init_unchained(name_, symbol_, decimals_);
+        __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_);
         __Reservable_init_unchained();
     }
 

@@ -4,12 +4,19 @@ const { expect } = require('chai');
 const { BN,constants, expectEvent, expectRevert, time } = require('@openzeppelin/test-helpers');
 
 const abi = require('./abi');  
-const privateKey = "ac12c709f163f3962b6ebf5b041d6fb6d8f838a42b43666a841e20c60d49c709";  
-const luniversePRC = "http://baas-rpc.luniverse.io:8545?lChainId=5300575914426995782";
-const Token01_Address="0xCf38A8502B60260cBe136f103B3b3c0985aA0CdD";
-const Token02_Address="0xbB0883652B52082EDDcD55f669735F8F9E9A63D4";
-const ProxyAdmin_Address="0xA1BBc2aFF9f61c9fA94E40F04a195D450E0B5015";
-const TransparentProxy_Address="0xeaEbF2bBbB947Ca09D171540FA84A878700C6EC9";
+const privateKey = "ac407fa511df5105b17881936d07c9be43ed22fc5b80d676383fdaf31ffedb5e";  
+//V2
+const luniversePRC = "http://baas-rpc.luniverse.io:8545?lChainId=1635501961136826136";  
+//classic
+// const luniversePRC = "http://baas-rpc.luniverse.io:8545?lChainId=5300575914426995782";
+
+// const Token01_Address="0xCf38A8502B60260cBe136f103B3b3c0985aA0CdD";
+
+const Token01_Address="0x1A5f478482EBdD0Eae667b7d23b085F0fFBe2eC3";
+const Token02_Address="0xC7f30f440A66bf8802B735532f5F88D9E09E06ED";
+
+const ProxyAdmin_Address="0x417fbbb84a2bd1cb0649be4ab45d9b907e629ae4";
+const TransparentProxy_Address="0x4ea4a152f7055ec8455c8e529ca124bb45af1f52";
 
 this.provider = new ethers.providers.JsonRpcProvider(luniversePRC);
 this.wallet = new ethers.Wallet(privateKey,this.provider);
@@ -34,7 +41,6 @@ async function txn(_input, _to){
                 gasPrice: ethers.utils.hexlify(23810000000000),
                 data: _input.data
                 };
-        // const tx = new Tx(rawTx); 
         const rawTransactionHex = await this.wallet.signTransaction(rawTx);
         const { hash } = await this.provider.sendTransaction(rawTransactionHex);
         await this.provider.waitForTransaction(hash);
@@ -76,7 +82,10 @@ describe('Token01 Test',()=>{
             expect(parseInt(await this.Token.allowance(this.wallet.address, Token01_Address))).to.equal(1000);;
         });
         it('peg test', async ()=>{
-            
+        //     const input = await this.Token.connect(this.wallet).populateTransaction.peg(peg_hash, peg_value, peg_sender);
+        //     const input = await this.Token.connect(this.wallet).populateTransaction.luniverseApprove(peg_hash);
+        //     await txn(input, TransparentProxy_Address);
+
             var [_pegValue, _pegSender, _gluwaApproved, _luniverseApproved, _proccessed] = await this.Token.getPeg(peg_hash);
 
             expect(parseInt(_pegValue._hex, 16)).to.equal(peg_value);
@@ -85,10 +94,10 @@ describe('Token01 Test',()=>{
             expect(_luniverseApproved).to.equal(luniverseApproved);
             expect(_proccessed).to.equal(proccessed);
         });
-        it('Role test', async()=>{    
+        it('Role test', async()=>{            
             var isGluwa = await this.Token.isGluwa(peg_sender);
-            input = isGluwa ?await this.Token.connect(this.wallet).populateTransaction.removeRole(peg_sender, ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Gluwa"))):
-            await this.Token.connect(this.wallet).populateTransaction.addRole(peg_sender,ethers.utils.keccak256(ethers.utils.toUtf8Bytes("Gluwa")));
+            input = isGluwa ?await this.Token.connect(this.wallet).populateTransaction.removeGluwa(peg_sender):
+            await this.Token.connect(this.wallet).populateTransaction.addGluwa(peg_sender);
             await txn(input, TransparentProxy_Address);
             expect(isGluwa).to.equal(!await this.Token.isGluwa(peg_sender));
         });

@@ -2,13 +2,9 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/access/Roles.sol";
-// import "@openzeppelin/contracts/GSN/Context.sol";
 import "../abstracts/ContextUpgradeable.sol";
-// import "../abstracts/ERC20.sol";
-// import "@openzeppelin/contracts/utils/Address.sol";
 
 contract GluwaRole is ContextUpgradeable {
-    // using Address for address;
     using Roles for Roles.Role;
 
     event GluwaAdded(address indexed account);
@@ -16,20 +12,12 @@ contract GluwaRole is ContextUpgradeable {
 
     Roles.Role private _Gluwas;
 
-    // constructor(address sender) public {
-    //     if (!isGluwa(sender)) {
-    //         _addGluwa(sender);
-    //     }
-    // } 
-    function __GluwaRole_init(address sender) internal initializer {
+    function __GluwaRole_init() internal initializer {
         __Context_init_unchained();
-        __GluwaRole_init_unchained(sender);
+        __GluwaRole_init_unchained();
     }
 
-    function __GluwaRole_init_unchained(address sender) internal initializer {
-        if (!isGluwa(sender)) {
-            _addGluwa(sender);
-        }
+    function __GluwaRole_init_unchained() internal initializer {
     }
 
     modifier onlyGluwa() {

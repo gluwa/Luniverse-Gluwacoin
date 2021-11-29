@@ -3,10 +3,8 @@ pragma solidity ^0.5.0;
 
 import "./IERC20Upgradeable.sol"; 
 import "./ContextUpgradeable.sol";
-import "@openzeppelin/contracts/GSN/Context.sol";
 import "./Initializable.sol";
-import "./SafeMath.sol";
-import "./Pausable.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 /**
  * @dev Implementation of the {IERC20} interface.
  *
@@ -32,32 +30,27 @@ import "./Pausable.sol";
  * functions have been added to mitigate the well-known issues around setting
  * allowances. See {IERC20-approve}.
  */
-contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20Upgradeable {
+contract ERC20Upgradeable is Initializable, ContextUpgradeable, IERC20Upgradeable {
     using SafeMath for uint256;
     
     mapping(address => uint256) private _balances;
 
     mapping(address => mapping(address => uint256)) private _allowances;
-    event Burnt(address indexed _burnFrom, uint256 _value);
 
     uint256 private _totalSupply;
 
     string private _name;
     string private _symbol;
     uint8 private _decimals;
-
     /**
      * @dev Sets the values for {name} and {symbol}.
-     *
-     * The default value of {decimals} is 18. To select a different value for
-     * {decimals} you should overload it.
      *
      * All two of these values are immutable: they can only be set once during
      * construction.
      */
     function __ERC20_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
         __Context_init_unchained();
-        __ERC20_init_unchained(name_, symbol_, decimals_);
+        __ERC20_init_unchained(name_, symbol_,decimals_);
     }
 
     function __ERC20_init_unchained(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
@@ -69,7 +62,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
     /**
      * @dev Returns the name of the token.
      */
-    function name() external view returns (string memory) {
+    function name() public view returns (string memory) {
         return _name;
     }
 
@@ -77,18 +70,19 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * @dev Returns the symbol of the token, usually a shorter version of the
      * name.
      */
-    function symbol() external view returns (string memory) {
+    function symbol() public view returns (string memory) {
         return _symbol;
     }
-
-    function decimals() external view returns (uint8) {
+    /**
+     * @dev Returns the number of decimals used to get its user representation.
+     */
+    function decimals() public view returns (uint8) {
         return _decimals;
     }
-
     /**
      * @dev See {IERC20-totalSupply}.
      */
-    function totalSupply() external view returns (uint256) {
+    function totalSupply() public view returns (uint256) {
         return _totalSupply;
     }
 
@@ -107,7 +101,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * - `recipient` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(address recipient, uint256 amount) external returns (bool) {
+    function transfer(address recipient, uint256 amount) public returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -115,7 +109,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) external view returns (uint256) {
+    function allowance(address owner, address spender) public view returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -126,7 +120,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 amount) external returns (bool) {
+    function approve(address spender, uint256 amount) public returns (bool) {
         _approve(_msgSender(), spender, amount);
         return true;
     }
@@ -148,7 +142,7 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
         address sender,
         address recipient,
         uint256 amount
-    ) external returns (bool) {
+    ) public returns (bool) {
         _transfer(sender, recipient, amount);
 
         uint256 currentAllowance = _allowances[sender][_msgSender()];
@@ -170,10 +164,10 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      *
      * - `spender` cannot be the zero address.
      */
-    // function increaseAllowance(address spender, uint256 addedValue) external returns (bool) {
-    //     _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
-    //     return true;
-    // }
+    function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
+        _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
+        return true;
+    }
 
     /**
      * @dev Atomically decreases the allowance granted to `spender` by the caller.
@@ -189,15 +183,15 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    // function decreaseAllowance(address spender, uint256 subtractedValue) external returns (bool) {
-    //     uint256 currentAllowance = _allowances[_msgSender()][spender];
-    //     require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
-    //     // unchecked {
-    //         _approve(_msgSender(), spender, currentAllowance - subtractedValue);
-    //     // }
+    function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
+        uint256 currentAllowance = _allowances[_msgSender()][spender];
+        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+        // unchecked {
+            _approve(_msgSender(), spender, currentAllowance - subtractedValue);
+        // }
 
-    //     return true;
-    // }
+        return true;
+    }
 
     /**
      * @dev Moves `amount` of tokens from `sender` to `recipient`.
@@ -278,27 +272,16 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
             _balances[account] = accountBalance - amount;
         // }
         _totalSupply -= amount;
-        emit Burnt(_msgSender(), amount);
 
         emit Transfer(account, address(0), amount);
 
         _afterTokenTransfer(account, address(0), amount);
     }
-    function _burnFrom(address account, uint256 amount) internal {
-        _burn(account, amount); 
-        _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount));
-    }
 
-    function burn(uint256 amount) external {
+    function burn(uint256 amount) public {
         _burn(_msgSender(), amount);
     }
 
-    /**
-     * @dev See {ERC20-_burnFrom}.
-     */
-    function burnFrom(address account, uint256 amount) external {
-        _burnFrom(account, amount);
-    }
     /**
      * @dev Sets `amount` as the allowance of `spender` over the `owner` s tokens.
      *
@@ -343,8 +326,6 @@ contract ERC20Upgradeable is Initializable, ContextUpgradeable, Pausable, IERC20
         address to,
         uint256 amount
     ) internal {
-        require(!paused(), "ERC20Pausable: token transfer while paused");
-
     }
 
     /**
