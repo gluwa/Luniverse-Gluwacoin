@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-import "./ERC20Upgradeable.sol";
+import "./ContextUpgradeable.sol";
+import "./Address.sol";
+
 import "./BeforeTransferERC20.sol";
 import "../roles/GluwaRole.sol";
 import "../roles/LuniverseRole.sol";
@@ -15,18 +17,10 @@ import "../roles/LuniverseRole.sol";
  * You cannot process a peg more than once.
  */
 contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
-    // using Address for address;
-
-    struct Peg {
-        uint256 _amount;
-        address _sender;
-        bool _gluwaApproved;
-        bool _luniverseApproved;
-        bool _processed;
-    }
-    function __Peggable_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
+    using Address for address;
+    function __Peggable_init(string memory name_, string memory symbol_, uint8 decimals_, uint256 chainId_) internal initializer {
         __Context_init_unchained();
-        __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_);
+        __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_, chainId_);
         __GluwaRole_init_unchained();
         __LuniverseRole_init_unchained();
         __Peggable_init_unchained();
@@ -34,6 +28,14 @@ contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
 
     function __Peggable_init_unchained() internal initializer {
     }
+    struct Peg {
+        uint256 _amount;
+        address _sender;
+        bool _gluwaApproved;
+        bool _luniverseApproved;
+        bool _processed;
+    }
+
     // transactionHash mapping to Peg.
     mapping (bytes32 => Peg) private _pegged;
 
@@ -115,5 +117,6 @@ contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
 
         _pegged[txnHash]._processed = true;
     }
+    
     uint256[50] private __gap;
 }

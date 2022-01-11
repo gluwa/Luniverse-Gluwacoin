@@ -19,14 +19,10 @@
  */
 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
-const PrivateKeyProvider = require("truffle-privatekey-provider");
-
-const infuraKey = "05aa70b19b7543f5bf120cbeb0a50dda";
+// const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").PRIVATE_KEY;
-const privKeys = require("./secret");
-
+// const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
   /**
@@ -39,9 +35,6 @@ module.exports = {
    * $ truffle test --network <network-name>
    */
 
-   plugins: [
-    'truffle-contract-size'
-  ],
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
@@ -49,14 +42,10 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
-    // development: {
-    //  host: "127.0.0.1",     // Localhost (default: none)
-    //  port: 8545,            // Standard Ethereum port (default: none)
-    //  network_id: "*",       // Any network (default: none)
-    // },
-    rinkeby: {
-      provider: () => new PrivateKeyProvider(privKeys, "https://rinkeby.infura.io/v3/"+infuraKey),
-      network_id: '4',
+    development: {
+     host: "127.0.0.1",     // Localhost (default: none)
+     port: 7545,            // Standard Ethereum port (default: none)
+     network_id: "5777",       // Any network (default: none)
     },
     // Another network with more advanced options...
     // advanced: {
@@ -87,7 +76,7 @@ module.exports = {
 
   // Set default mocha options here, use special reporters etc.
   mocha: {
-    timeout: 200000
+    timeout: 500000
   },
 
   // Configure your compilers

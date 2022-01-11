@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
+// import "@openzeppelin/contracts/GSN/Context.sol";
+import "@openzeppelin/contracts/cryptography/ECDSA.sol";
+import "./Address.sol";
 import "./ContextUpgradeable.sol";
-import "./ERC20Upgradeable.sol";
+import "../libs/GluwacoinModels.sol";
+
 import "./BeforeTransferERC20.sol";
 import "../Validate.sol";
 import "../roles/GluwaRole.sol";
@@ -11,13 +15,14 @@ import "../roles/GluwaRole.sol";
  * @dev Extension of {ERC20} that allows users to send ETHless transfer by hiring a transaction relayer to pay the
  * gas fee for them. The relayer gets paid in this ERC20 token for `fee`.
  */
-contract ETHlessTransfer is ContextUpgradeable,BeforeTransferERC20 , GluwaRole {
+contract ETHlessTransfer is ContextUpgradeable, BeforeTransferERC20, GluwaRole {
+    using Address for address;
+    using ECDSA for bytes32;
 
     mapping (address => mapping (uint256 => bool)) private _usedNonces;
-
-    function __ETHlessTransfer_init(string memory name_, string memory symbol_, uint8 decimals_) internal initializer {
+    function __ETHlessTransfer_init(string memory name_, string memory symbol_, uint8 decimals_, uint256 chainId_) internal initializer {
         __Context_init_unchained();
-        __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_);
+        __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_, chainId_);
         __GluwaRole_init_unchained();
         __ETHlessTransfer_init_unchained();
     }
@@ -42,8 +47,11 @@ contract ETHlessTransfer is ContextUpgradeable,BeforeTransferERC20 , GluwaRole {
     function transfer(address sender, address recipient, uint256 amount, uint256 fee, uint256 nonce, bytes memory sig)
     public onlyGluwa returns (bool success) {
         _useNonce(sender, nonce);
+        uint256 chainId = chainId();
+        // bytes32 hash = keccak256(abi.encodePacked(address(this), sender, recipient, amount, fee, nonce));
+        bytes32 hash = keccak256(abi.encodePacked(GluwacoinModels.SigDomain.Transfer,chainId,address(this), 
+        sender, recipient, amount, fee, nonce));
 
-        bytes32 hash = keccak256(abi.encodePacked(address(this), sender, recipient, amount, fee, nonce));
         Validate.validateSignature(hash, sender, sig);
 
         _collect(sender, fee);

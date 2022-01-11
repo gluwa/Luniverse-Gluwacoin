@@ -32,5 +32,23 @@ module.exports = {
         var signature = obj.signature;
 
         return signature;
-    }
+    },
+    signTransfer: function (domain, chainId, contractAddress, sourceAddress, sourcePrivateKey, recipientAddress, amount, fee, nonce ) {
+        var hash = web3.utils.soliditySha3(
+            { t: 'uint8', v: domain },
+            { t: 'uint256', v: chainId },
+            { t: 'address', v: contractAddress },
+            { t: 'address', v: sourceAddress },
+            { t: 'address', v: recipientAddress },
+            { t: 'uint256', v: amount },
+            { t: 'uint256', v: fee },
+            { t: 'uint256', v: nonce }          
+            );
+
+        var obj = web3.eth.accounts.sign(hash , sourcePrivateKey);
+
+        var signature = obj.signature;
+
+        return signature;
+    },
 };

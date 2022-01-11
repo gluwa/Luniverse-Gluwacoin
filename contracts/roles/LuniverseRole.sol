@@ -2,9 +2,12 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/access/Roles.sol";
+// import "@openzeppelin/contracts/GSN/Context.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "../abstracts/Address.sol";
 import "../abstracts/ContextUpgradeable.sol";
-
 contract LuniverseRole is ContextUpgradeable {
+    using Address for address;
     using Roles for Roles.Role;
 
     event LuniverseAdded(address indexed account);
@@ -12,6 +15,11 @@ contract LuniverseRole is ContextUpgradeable {
 
     Roles.Role private _Luniverses;
 
+    // constructor(address sender) public {
+    //     if (!isLuniverse(sender)) {
+    //         _addLuniverse(sender);
+    //     }
+    // }
     function __LuniverseRole_init() internal initializer {
         __Context_init_unchained();
         __LuniverseRole_init_unchained();
@@ -49,5 +57,6 @@ contract LuniverseRole is ContextUpgradeable {
         _Luniverses.remove(account);
         emit LuniverseRemoved(account);
     }
+    
     uint256[50] private __gap;
 }

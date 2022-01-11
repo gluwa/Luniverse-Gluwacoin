@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-import "@openzeppelin/contracts/GSN/Context.sol";
+import "./ContextUpgradeable.sol";
 import "./Address.sol";
+
 import "./BeforeTransferERC20.sol";
 import "../roles/GluwaRole.sol";
 import "../roles/LuniverseRole.sol";
@@ -17,7 +18,16 @@ import "../roles/LuniverseRole.sol";
  */
 contract SandboxPeggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
     using Address for address;
+    function __SandboxPeggable_init(string memory name_, string memory symbol_, uint8 decimals_, uint256 chainId_) internal initializer {
+        __Context_init_unchained();
+        __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_, chainId_);
+        __GluwaRole_init_unchained();
+        __LuniverseRole_init_unchained();
+        __SandboxPeggable_init_unchained();
+    }
 
+    function __SandboxPeggable_init_unchained() internal initializer {
+    }
     struct Peg {
         uint256 _amount;
         address _sender;
@@ -123,4 +133,6 @@ contract SandboxPeggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
 
         _pegged[txnHash]._processed = true;
     }
+    
+    uint256[50] private __gap;
 }
