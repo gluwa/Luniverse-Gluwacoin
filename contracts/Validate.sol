@@ -2,13 +2,12 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-import "./abstracts/Address.sol";
 
 /**
  * @dev Signature verification
  */
 library Validate {
-    using Address for address;
+    // using Address for address;
     using ECDSA for bytes32;
 
     /**

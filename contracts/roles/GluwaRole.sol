@@ -2,13 +2,10 @@
 pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/access/Roles.sol";
-// import "@openzeppelin/contracts/GSN/Context.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "../abstracts/Address.sol";
 import "../abstracts/ContextUpgradeable.sol";
 
 contract GluwaRole is ContextUpgradeable {
-    using Address for address;
     using Roles for Roles.Role;
 
     event GluwaAdded(address indexed account);

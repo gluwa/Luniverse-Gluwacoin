@@ -3,8 +3,6 @@ pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-import "./Address.sol";
-
 import "./BeforeTransferERC20.sol";
 import "../Validate.sol";
 
@@ -15,7 +13,6 @@ import "../Validate.sol";
  * the fund back to the `sender`.
  */
 contract Reservable is BeforeTransferERC20 {
-    using Address for address;
     using ECDSA for bytes32;
     function __Reservable_init(string memory name_, string memory symbol_, uint8 decimals_, uint256 chainId_) internal initializer {
         __Context_init_unchained();

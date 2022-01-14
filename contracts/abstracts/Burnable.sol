@@ -2,7 +2,6 @@
 pragma solidity ^0.5.0;
 
 // import "@openzeppelin/contracts/GSN/Context.sol";
-import "./Address.sol";
 import "./BeforeTransferERC20.sol";
 import "./ContextUpgradeable.sol";
 
@@ -11,7 +10,6 @@ import "./ContextUpgradeable.sol";
  * @dev Extension of {ERC20} that allows users to burn its token or burnFrom its allowance.
  */
 contract Burnable is ContextUpgradeable, BeforeTransferERC20 {
-    using Address for address;
 
     event Burnt(address indexed _burnFrom, uint256 _value);
 

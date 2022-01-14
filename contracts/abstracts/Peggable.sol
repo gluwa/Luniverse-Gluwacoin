@@ -2,8 +2,6 @@
 pragma solidity ^0.5.0;
 
 import "./ContextUpgradeable.sol";
-import "./Address.sol";
-
 import "./BeforeTransferERC20.sol";
 import "../roles/GluwaRole.sol";
 import "../roles/LuniverseRole.sol";
@@ -17,7 +15,6 @@ import "../roles/LuniverseRole.sol";
  * You cannot process a peg more than once.
  */
 contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
-    using Address for address;
     function __Peggable_init(string memory name_, string memory symbol_, uint8 decimals_, uint256 chainId_) internal initializer {
         __Context_init_unchained();
         __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_, chainId_);
