@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.5.0;
 
-import "./ContextUpgradeable.sol";
+// import "@openzeppelin/contracts/GSN/Context.sol";
 import "./BeforeTransferERC20.sol";
+import "./ContextUpgradeable.sol";
+
 
 /**
  * @dev Extension of {ERC20} that allows users to burn its token or burnFrom its allowance.
@@ -30,4 +32,5 @@ contract Burnable is ContextUpgradeable, BeforeTransferERC20 {
 
         _burnFrom(account, amount);
     }
+    uint256[50] private __gap;
 }

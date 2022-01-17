@@ -2,7 +2,7 @@
 
 pragma solidity ^0.5.0;
 
-import "./Pausable.sol";
+import "@openzeppelin/contracts/lifecycle/Pausable.sol";
 
 import "./BeforeTransferERC20.sol";
 
@@ -14,9 +14,6 @@ import "./BeforeTransferERC20.sol";
  * event of a large bug.
  */
 contract ERC20Pausable is BeforeTransferERC20, Pausable {
-    function __ERC20Pausable_init()internal initializer{
-        
-    }
     /**
      * @dev See {ERC20-_beforeTokenTransfer}.
      *
@@ -29,6 +26,6 @@ contract ERC20Pausable is BeforeTransferERC20, Pausable {
 
         require(!paused(), "ERC20Pausable: token transfer while paused");
     }
+    
     uint256[50] private __gap;
-
 }

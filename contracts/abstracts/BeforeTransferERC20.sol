@@ -1,19 +1,20 @@
 pragma solidity ^0.5.0;
 
-import "./ContextUpgradeable.sol";
+// import "@openzeppelin/contracts/GSN/Context.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "./ERC20Upgradeable.sol";
+import "./ContextUpgradeable.sol";
+
 /**
  * @dev @openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol with `_beforeTransfer`
  *
  * Changes made to `_transfer`, `_mint`, and `_burn` to add `_beforeTransfer`.
- */ 
-contract BeforeTransferERC20 is ContextUpgradeable, ERC20Upgradeable {
+ */
+contract BeforeTransferERC20 is ContextUpgradeable, IERC20 {
     using SafeMath for uint256;
 
-    event Burnt(address indexed _burnFrom, uint256 _value);
-
     mapping (address => uint256) private _balances;
+
     mapping (address => mapping (address => uint256)) private _allowances;
 
     uint256 private _totalSupply;
@@ -21,21 +22,27 @@ contract BeforeTransferERC20 is ContextUpgradeable, ERC20Upgradeable {
     string private _name;
     string private _symbol;
     uint8 private _decimals;
+    uint256 private _chainId;
 
     /**
      * @dev Sets the values for `name`, `symbol`, and `decimals`. All three of
      * these values are immutable: they can only be set once during
      * construction.
      */
-    function __BeforeTransferERC20_init(string memory name, string memory symbol, uint8 decimals) public {
+    // constructor (string memory name, string memory symbol, uint8 decimals) public {
+    //     _name = name;
+    //     _symbol = symbol;
+    //     _decimals = decimals;
+    // }
+    function __BeforeTransferERC20_init(string memory name, string memory symbol, uint8 decimals, uint256 chainId) public {
        __Context_init_unchained();
-       __ERC20_init_unchained(name, symbol,decimals);
-       __BeforeTransferERC20_init_unchained(name,symbol,decimals);
+       __BeforeTransferERC20_init_unchained(name,symbol,decimals,chainId);
     }
-    function __BeforeTransferERC20_init_unchained(string memory name, string memory symbol, uint8 decimals) public {
+    function __BeforeTransferERC20_init_unchained(string memory name, string memory symbol, uint8 decimals, uint256 chainId) public {
         _name = name;
         _symbol = symbol;
         _decimals = decimals;
+        _chainId = chainId;
     }
 
     /**
@@ -68,6 +75,9 @@ contract BeforeTransferERC20 is ContextUpgradeable, ERC20Upgradeable {
      */
     function decimals() public view returns (uint8) {
         return _decimals;
+    }
+    function chainId() public view returns (uint256) {
+        return _chainId;
     }
 
     /**
@@ -232,7 +242,6 @@ contract BeforeTransferERC20 is ContextUpgradeable, ERC20Upgradeable {
 
         _balances[account] = _balances[account].sub(amount, "ERC20: burn amount exceeds balance");
         _totalSupply = _totalSupply.sub(amount);
-        emit Burnt(_msgSender(), amount);
         emit Transfer(account, address(0), amount);
     }
 
@@ -284,5 +293,4 @@ contract BeforeTransferERC20 is ContextUpgradeable, ERC20Upgradeable {
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal { }
     uint256[50] private __gap;
-
 }
