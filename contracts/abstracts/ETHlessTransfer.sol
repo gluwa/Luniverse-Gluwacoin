@@ -16,7 +16,6 @@ import "../roles/GluwaRole.sol";
 contract ETHlessTransfer is ContextUpgradeable, BeforeTransferERC20, GluwaRole {
     using ECDSA for bytes32;
 
-    mapping (address => mapping (uint256 => bool)) private _usedNonces;
     function __ETHlessTransfer_init(string memory name_, string memory symbol_, uint8 decimals_, uint256 chainId_) internal initializer {
         __Context_init_unchained();
         __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_, chainId_);
@@ -55,13 +54,6 @@ contract ETHlessTransfer is ContextUpgradeable, BeforeTransferERC20, GluwaRole {
         _transfer(sender, recipient, amount);
 
         return true;
-    }
-
-    /* @dev Uses `nonce` for the signer.
-    */
-    function _useNonce(address signer, uint256 nonce) private {
-        require(!_usedNonces[signer][nonce], "ETHless: the nonce has already been used for this address");
-        _usedNonces[signer][nonce] = true;
     }
 
     /** @dev Collects `fee` from the sender.
