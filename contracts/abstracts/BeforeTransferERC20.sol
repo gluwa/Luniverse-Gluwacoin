@@ -23,8 +23,6 @@ contract BeforeTransferERC20 is ContextUpgradeable, IERC20 {
     string private _symbol;
     uint8 private _decimals;
     uint256 private _chainId;
-    
-    mapping (address => mapping (uint256 => bool)) private _usedNonces;
 
     /**
      * @dev Sets the values for `name`, `symbol`, and `decimals`. All three of
@@ -294,13 +292,5 @@ contract BeforeTransferERC20 is ContextUpgradeable, IERC20 {
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal { }
-
-    /* @dev Uses `nonce` for the signer.
-    */
-    function _useNonce(address signer, uint256 nonce) internal {
-        require(!_usedNonces[signer][nonce], "ETHless: the nonce has already been used for this address");
-        _usedNonces[signer][nonce] = true;
-    }
-
     uint256[50] private __gap;
 }

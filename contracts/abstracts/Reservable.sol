@@ -72,7 +72,6 @@ contract Reservable is BeforeTransferERC20 {
 
     function reserve(address sender, address recipient, address executor, uint256 amount, uint256 fee, uint256 nonce,
         uint256 expiryBlockNum, bytes memory sig) public returns (bool success) {
-        _useNonce(sender, nonce);
 
         require(executor != address(0), "Reservable: cannot execute from zero address");
         require(expiryBlockNum > block.number, "Reservable: invalid block expiry number");
