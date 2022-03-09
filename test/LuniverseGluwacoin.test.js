@@ -9,12 +9,14 @@ const { ZERO_ADDRESS, MAX_UINT256 } = constants;
 // Load compiled artifacts
 const LuniverseGluwacoin = contract.fromArtifact('LuniverseGluwacoin');
 
-var sign = require('./signature');
+var sign = require('./newSignature');
 const name = 'LuniverseGluwacoin';
 const symbol = 'LG';
 const decimals = new BN('18');
 const chainId = new BN('1635501961136826136');
+const SigDomainBurn = 1;
 const SigDomainTransfer = 3;
+const SigDomainReserve = 4;
 
 // Start test block
 describe('LuniverseGluwacoin_Initialization', function () {
@@ -474,7 +476,7 @@ describe('LuniverseGluwacoin_Peggable', function () {
     it('cannot peg invalid pegTxnHash', async function () {
         await expectRevert(
             this.token.peg(invalidPegTxnHash, pegAmount, pegSender, { from : deployer }),
-            'invalid bytes32 value'
+            'invalid arrayify value'
         );
     });
 
@@ -941,6 +943,164 @@ describe('LuniverseGluwacoin_Burn', function () {
     });
 });
 
+describe('LuniverseGluwacoin_ETHLess_burn', function () {
+    const [ deployer, other, another ] = accounts;
+    const [ deployer_privateKey, other_privateKey, another_privateKey ] = privateKeys;
+
+    const amount = new BN('5000');
+    const fee = new BN('1');
+
+    const pegTxnHash = '0x' + crypto.randomBytes(64).toString('hex').substring(64);
+    const pegAmount = new BN('1000');
+
+    beforeEach(async function () {
+        // Deploy a new LuniverseGluwacoin contract for each test
+        this.token = await LuniverseGluwacoin.new({ from : deployer });
+        this.token.initialize(name, symbol, decimals, chainId, { from : deployer });
+        // peg and mint {amount} to {other}
+        await this.token.peg(pegTxnHash, amount, other, { from : deployer });
+        await this.token.gluwaApprove(pegTxnHash, { from : deployer });
+        await this.token.luniverseApprove(pegTxnHash, { from : deployer });
+        await this.token.mint(pegTxnHash, { from : deployer });
+        // {other}'s starting balance is {amount}
+        expect(await this.token.balanceOf(other)).to.be.bignumber.equal(amount);
+        // {deployer} starting balance is 0
+        expect(await this.token.balanceOf(deployer)).to.be.bignumber.equal('0');
+    });
+
+    /* EthLess burn() related
+    */
+    it('can call EthLess burn() if amount + fee < full balance', async function () {
+        var leftoverBalance = new BN('1');
+        var burn_amount = amount.sub(fee).sub(leftoverBalance);
+        var burn_fee = fee;
+        var nonce = Date.now();
+
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, other, other_privateKey, burn_amount, burn_fee, nonce);
+
+        await this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 });
+
+        // {other}'s balance is dropped to 0
+        expect(await this.token.balanceOf(other)).to.be.bignumber.equal(new BN('3'));
+    });
+
+    it('can call EthLess burn() if amount + fee == full balance', async function () {
+        var burn_amount = amount.sub(fee);
+        var burn_fee = fee;
+        var nonce = Date.now();
+
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, other, other_privateKey, burn_amount, burn_fee, nonce);
+
+        await this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 });
+
+        // {other}'s balance is dropped to 0
+        expect(await this.token.balanceOf(other)).to.be.bignumber.equal(new BN('2'));
+    });
+
+    it('cannot call EthLess burn() with the same nonce twice', async function () {
+        var burn_amount = new BN('2000')
+        var burn_fee = fee;
+        var nonce = Date.now();
+        
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, other, other_privateKey, burn_amount, burn_fee, nonce);
+
+        await this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 });
+
+        // {other}'s balance is dropped to 0
+        expect(await this.token.balanceOf(other)).to.be.bignumber.equal(new BN('3001'));
+
+        await expectRevert(
+            this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 }),
+            'ETHless: the nonce has already been used for this address'
+        );
+    });
+
+    it('cannot call EthLess burn() if amount + fee > full balance', async function () {
+        var burn_amount = amount.sub(fee).add(new BN('2'));
+        var burn_fee = fee;
+        var nonce = Date.now();
+
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, other, other_privateKey, burn_amount, burn_fee, nonce);
+
+        await expectRevert(
+            this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 }),
+            'ERC20Wrapper: burn amount exceed balance'
+        );
+    });
+
+    it('cannot call EthLess burn() if amount + fee + burnd > full balance', async function () {
+        var burn_amount = amount.sub(fee);
+        var burn_fee = fee;
+        var nonce = Date.now();
+        
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, other, other_privateKey, burn_amount, burn_fee, nonce);
+
+        await this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 });
+
+        var newNonce = Date.now();
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, other, other_privateKey, burn_amount, burn_fee, newNonce);
+
+        await expectRevert(
+            this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, newNonce, signature, { from: other, gasLimit: 9000000 }),
+            'ERC20Wrapper: burn amount exceed balance'
+        );
+    });
+
+    it('can call EthLess burn() if amount + fee = 0', async function () {
+        var burn_amount = new BN('0')
+        var burn_fee = new BN('0');
+        var nonce = Date.now();
+        
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, other, other_privateKey, burn_amount, burn_fee, nonce);
+
+        await this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 });
+
+        expect(await this.token.balanceOf(other)).to.be.bignumber.equal(amount);
+    });
+
+    it('cannot call EthLess burn() if nonce is already used', async function () {
+        // mint another {amount} to {other}
+        // generate a random txnHash that is different from pegTxnHash
+        var newPegTxnHash = pegTxnHash;
+        while (newPegTxnHash == pegTxnHash) {
+            newPegTxnHash = '0x' + crypto.randomBytes(64).toString('hex').substring(64);
+        }
+        // peg and mint {amount} to {other}
+        await this.token.peg(newPegTxnHash, amount, other, { from : deployer });
+        await this.token.gluwaApprove(newPegTxnHash, { from : deployer });
+        await this.token.luniverseApprove(newPegTxnHash, { from : deployer });
+        await this.token.mint(newPegTxnHash, { from : deployer });
+        // {other}'s starting balance is {amount} * 2
+        expect(await this.token.balanceOf(other)).to.be.bignumber.equal(amount.mul(new BN('2')));
+
+        var burn_amount = amount.sub(fee);
+        var burn_fee = fee;
+        var nonce = Date.now();
+        
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, other, other_privateKey, burn_amount, burn_fee, nonce);
+
+        await this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 });
+
+        await expectRevert(
+            this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 }),
+            'ETHless: the nonce has already been used for this address'
+        );
+    });
+
+    it('cannot call EthLess burn() if signature is invalid', async function () {
+        var burn_amount = amount.sub(fee);
+        var burn_fee = fee;
+        var nonce = Date.now();
+
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, other, another_privateKey, burn_amount, burn_fee, nonce);
+
+        await expectRevert(
+            this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](other, burn_amount, burn_fee, nonce, signature, { from: other, gasLimit: 9000000 }),
+            'Validate: invalid signature'
+        );
+    });
+});
+
 describe('LuniverseGluwacoin_Reservable_Reserve', function () {
     const [ deployer, other, another ] = accounts;
     const [ deployer_privateKey, other_privateKey, another_privateKey ] = privateKeys;
@@ -977,7 +1137,7 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another });
 
@@ -999,7 +1159,7 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another });
 
@@ -1013,6 +1173,33 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         expect(reserve.status).to.be.bignumber.equal(new BN('0'));
     });
 
+    it('cannot call reserve() with the same nonce twice', async function () {
+        var executor = deployer;
+        var reserve_amount = amount.sub(fee);
+        var reserve_fee = fee;
+        var latestBlock = await time.latestBlock();
+        var expiryBlockNum = latestBlock.add(new BN('100'));
+        var nonce = Date.now();
+
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+
+        await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another });
+
+        // {other}'s balance is dropped to 0
+        expect(await this.token.balanceOf(other)).to.be.bignumber.equal(new BN('0'));
+        // {other}'s reserved balance equals {amount}
+        expect(await this.token.reservedOf(other)).to.be.bignumber.equal(amount);
+
+        var reserve = await this.token.getReservation(other, nonce);
+        // ReservationStatus is set to `Active`
+        expect(reserve.status).to.be.bignumber.equal(new BN('0'));
+
+        await expectRevert(
+            this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another }),
+            'ETHless: the nonce has already been used for this address'
+        );
+    });
+
     it('cannot call reserve() with outdated expiryBlockNum', async function () {
         var executor = deployer;
         var reserve_amount = amount.sub(fee);
@@ -1021,7 +1208,7 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock;
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await expectRevert(
             this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another }),
@@ -1037,7 +1224,7 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock;
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await expectRevert(
             this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another }),
@@ -1053,7 +1240,7 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await expectRevert(
             this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another }),
@@ -1069,12 +1256,12 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another });
 
         var newNonce = Date.now();
-        var newSignature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, newNonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, newNonce, expiryBlockNum);
 
         await expectRevert(
             this.token.reserve(other, another, executor, reserve_amount, reserve_fee, newNonce, expiryBlockNum, signature, { from: another }),
@@ -1090,7 +1277,7 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another });
 
@@ -1121,13 +1308,13 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another });
 
         await expectRevert(
             this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another }),
-            'Reservable: the sender used the nonce already'
+            'ETHless: the nonce has already been used for this address'
         );
     });
 
@@ -1139,7 +1326,7 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, another_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, another_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await expectRevert(
             this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another }),
@@ -1157,7 +1344,7 @@ describe('LuniverseGluwacoin_Reservable_Reserve', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another });
 
@@ -1204,7 +1391,7 @@ describe('LuniverseGluwacoin_Reservable_Execute', function () {
         // create a reserve
         var latestBlock = await time.latestBlock();
         this.expiryBlockNum = latestBlock.add(new BN('100'));
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, this.expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, this.expiryBlockNum);
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, this.expiryBlockNum, signature, { from: another });
         // {other}'s balance is dropped to 0
         expect(await this.token.balanceOf(other)).to.be.bignumber.equal(new BN('0'));
@@ -1493,7 +1680,7 @@ describe('LuniverseGluwacoin_Reservable_Reclaim', function () {
         // create a reserve
         var latestBlock = await time.latestBlock();
         this.expiryBlockNum = latestBlock.add(new BN('100'));
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, this.expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, this.expiryBlockNum);
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, this.expiryBlockNum, signature, { from: another });
         // {other}'s balance is dropped to 0
         expect(await this.token.balanceOf(other)).to.be.bignumber.equal(new BN('0'));
@@ -1683,6 +1870,7 @@ describe('LuniverseGluwacoin_Reservable_BalanceOf', function () {
     const [ deployer_privateKey, other_privateKey, another_privateKey ] = privateKeys;
 
     const amount = new BN('5000');
+    const amountDouble = new BN('10000');
     const fee = new BN('1');
 
     const pegTxnHash = '0x' + crypto.randomBytes(64).toString('hex').substring(64);
@@ -1717,7 +1905,7 @@ describe('LuniverseGluwacoin_Reservable_BalanceOf', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another });
 
@@ -1735,7 +1923,7 @@ describe('LuniverseGluwacoin_Reservable_BalanceOf', function () {
         var expiryBlockNum = latestBlock.add(new BN('100'));
         var nonce = Date.now();
 
-        var signature = sign.signReserve(this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
+        var signature = sign.signReserve(SigDomainReserve, chainId, this.token.address, other, other_privateKey, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum);
 
         await this.token.reserve(other, another, executor, reserve_amount, reserve_fee, nonce, expiryBlockNum, signature, { from: another });
 
@@ -1751,6 +1939,7 @@ describe('LuniverseGluwacoin_ETHless', function () {
     const [ deployer_privateKey, other_privateKey, another_privateKey, pegSender_privateKey ] = privateKeys;
 
     const amount = new BN('5000');
+    const amountDouble = new BN('10000');
     const fee = new BN('1');
     const pegTxnHash = '0x2ff883f947eda8a14f54d1e372b8031bb47d721dede68c8934f49f818efe8620';
     const pegAmount = new BN('1000');
@@ -1851,7 +2040,7 @@ describe('LuniverseGluwacoin_ETHless', function () {
         await this.token.mint(pegTxnHash, { from : deployer });
 
         var nonce = Date.now();
-        var wrongSignature = sign.sign(this.token.address, other, other_privateKey, another, amount, fee, nonce);
+        var wrongSignature = sign.signTransfer(3, chainId, this.token.address, other, other_privateKey, another, amount, fee, nonce);
 
         await expectRevert(
             this.token.transfer(other, another, amount.sub(fee), fee, nonce, wrongSignature, { from: deployer }),
@@ -2034,12 +2223,30 @@ describe('LuniverseGluwacoin_ERC20Pausable', function () {
         expect(await this.token.paused()).to.be.equal(true);
 
         var nonce = Date.now();
-        // var signature = sign.sign(this.token.address, pegSender, pegSender_privateKey, other, amount.sub(fee), fee, nonce);
         var signature = sign.signTransfer(SigDomainTransfer,chainId,this.token.address, pegSender, pegSender_privateKey, other, amount.sub(fee), fee, nonce);
 
         await expectRevert(
             this.token.transfer(pegSender, other, amount.sub(fee), fee, nonce, signature, { from: deployer }),
             "ERC20Pausable: token transfer while paused"
+        );
+    });
+
+    it('cannot ETHless burn when paused', async function () {
+        await this.token.peg(pegTxnHash, pegAmount, pegSender, { from : deployer });
+        await this.token.gluwaApprove(pegTxnHash, { from : deployer });
+        await this.token.luniverseApprove(pegTxnHash, { from : deployer });
+        await this.token.mint(pegTxnHash, { from : deployer });
+
+        await this.token.pause({ from : deployer });
+        expect(await this.token.paused()).to.be.equal(true);
+
+        var nonce = Date.now();
+
+        var signature = sign.signBurn(SigDomainBurn, chainId, this.token.address, pegSender, pegSender_privateKey, pegAmount.sub(fee), fee, nonce);
+
+        await expectRevert(
+            this.token.methods['burn(address,uint256,uint256,uint256,bytes)'](pegSender, pegAmount.sub(fee), fee, nonce, signature, { from: deployer }),
+            "Pausable: paused"
         );
     });
 });

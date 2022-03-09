@@ -45,7 +45,7 @@ contract LuniverseGluwacoin is Initializable, ERC20Pausable, GluwaRole, Lunivers
         uint256 fee,
         uint256 nonce,
         bytes calldata sig
-    ) external {
+    ) external whenNotPaused {
         uint256 burnerBalance = balanceOf(burner);
         require(
             burnerBalance >= amount,

@@ -4,19 +4,18 @@ const { expect } = require('chai');
 const { BN,constants, expectEvent, expectRevert, time } = require('@openzeppelin/test-helpers');
 
 const abi = require('./abi');  
-const privateKey = "ac407fa511df5105b17881936d07c9be43ed22fc5b80d676383fdaf31ffedb5e";  
+const privateKey = "0x9b22b7e2747a59e7eb138c0820f511153476f8eb2005960a28a3033a32df909f";  
 //V2
 const luniversePRC = "http://baas-rpc.luniverse.io:8545?lChainId=1635501961136826136";  
 //classic
 // const luniversePRC = "http://baas-rpc.luniverse.io:8545?lChainId=5300575914426995782";
 
-// const Token01_Address="0xCf38A8502B60260cBe136f103B3b3c0985aA0CdD";
+const Token01_Address="0x6EB9871a9E52ad76e5f8e11A2864A13Ef3ea133f";
+const Token02_Address="0x9bE1F71A309DD428A100Ac599242F19Ffb1dbFb6";
+const Token03_Address="0x8d43899B47aD432c2f7fc648777e5c0C5Fa8ccC7";               // GLA679_LuniverseGluwacoinV3
 
-const Token01_Address="0x1A5f478482EBdD0Eae667b7d23b085F0fFBe2eC3";
-const Token02_Address="0xC7f30f440A66bf8802B735532f5F88D9E09E06ED";
-
-const ProxyAdmin_Address="0x417fbbb84a2bd1cb0649be4ab45d9b907e629ae4";
-const TransparentProxy_Address="0x4ea4a152f7055ec8455c8e529ca124bb45af1f52";
+const ProxyAdmin_Address = "0x907A29F994c16d8427567A442238F64629929659";          // GLA666_ProxyAdmin_16feb2022
+const TransparentProxy_Address = "0xB65dCcaB8f4B07cB96cDeC34994f378345d037c9";    // GLA679_ProxyTransparen_09mar2022
 
 this.provider = new ethers.providers.JsonRpcProvider(luniversePRC);
 this.wallet = new ethers.Wallet(privateKey,this.provider);
@@ -27,7 +26,17 @@ const peg_value = 1000;
 const gluwaApproved = false;
 const luniverseApproved = true;
 const proccessed = false;
-
+const name = 'LuniverseGluwacoin';
+const symbol = 'LG';
+const decimals = new BN('18');
+const chainId = new BN('1635501961136826136');
+const SigDomainBurn = 1;
+const SigDomainTransfer = 3;
+const SigDomainReserve = 4;
+const fee = 1;
+const sendAmount = 50;
+var sign = require('./signature');
+var newSign = require('./newSignature');
 
 async function txn(_input, _to){
         this.provider = new ethers.providers.JsonRpcProvider(luniversePRC);
@@ -82,11 +91,13 @@ describe('Token01 Test',()=>{
             expect(parseInt(await this.Token.allowance(this.wallet.address, Token01_Address))).to.equal(1000);;
         });
         it('peg test', async ()=>{
-        //     const input = await this.Token.connect(this.wallet).populateTransaction.peg(peg_hash, peg_value, peg_sender);
-        //     const input = await this.Token.connect(this.wallet).populateTransaction.luniverseApprove(peg_hash);
-        //     await txn(input, TransparentProxy_Address);
-
-            var [_pegValue, _pegSender, _gluwaApproved, _luniverseApproved, _proccessed] = await this.Token.getPeg(peg_hash);
+                var randHash = await web3.utils.randomHex(32);
+                input = await this.Token.connect(this.wallet).populateTransaction.peg(randHash, peg_value, peg_sender);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.luniverseApprove(randHash);
+                await txn(input, TransparentProxy_Address);
+    
+                var [_pegValue, _pegSender, _gluwaApproved, _luniverseApproved, _proccessed] = await this.Token.getPeg(randHash);
 
             expect(parseInt(_pegValue._hex, 16)).to.equal(peg_value);
             expect(_pegSender).to.equal(peg_sender);
@@ -113,11 +124,49 @@ describe('Token02 - After upgrade test',()=>{
         it('Current implement logic is Token02',async()=>{
                 expect(await this.ProxyAdmin.getProxyImplementation(TransparentProxy_Address)).to.equal(Token02_Address);
         });
-        it('New Function in Token02',async()=>{
-                expect(await this.Token.newFunc()).to.equal("New Function");
+        // it('New Function in Token02',async()=>{
+        //         expect(await this.Token.newFunc()).to.equal("New Function");
+        // });
+        // it('New Variable in Token02',async()=>{
+        //         expect(await this.Token.newVar()).to.equal("New Variable");
+        // });
+        it('Approve test',async()=>{
+                let input = await this.Token.connect(this.wallet).populateTransaction.approve(Token01_Address,1000);     
+                await txn(input, TransparentProxy_Address);
+                expect(parseInt(await this.Token.allowance(this.wallet.address, Token01_Address))).to.equal(1000);;
         });
-        it('New Variable in Token02',async()=>{
-                expect(await this.Token.newVar()).to.equal("New Variable");
+        it('deployer has Gluwa role', async()=> {
+            expect(await this.Token.isGluwa(this.wallet.address)).to.be.equal(true);
+        });
+        
+        it('peg test', async ()=>{
+                var randHash = await web3.utils.randomHex(32);
+                input = await this.Token.connect(this.wallet).populateTransaction.peg(randHash, peg_value, peg_sender);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.luniverseApprove(randHash);
+                await txn(input, TransparentProxy_Address);
+    
+                var [_pegValue, _pegSender, _gluwaApproved, _luniverseApproved, _proccessed] = await this.Token.getPeg(randHash);
+            
+            expect(parseInt(_pegValue._hex, 16)).to.equal(peg_value);
+            expect(_pegSender).to.equal(peg_sender);
+            expect(_gluwaApproved).to.equal(gluwaApproved);
+            expect(_luniverseApproved).to.equal(luniverseApproved);
+            expect(_proccessed).to.equal(proccessed);
+        });
+});
+
+
+describe('Token03 - After upgrade test',()=>{
+        before(async()=>{
+                this.ProxyAdmin = await new ethers.Contract(ProxyAdmin_Address, abi.ProxyAdmin, this.wallet);
+
+                const input = await this.ProxyAdmin.connect(this.wallet).populateTransaction.upgrade(TransparentProxy_Address, Token03_Address);
+                await txn(input, ProxyAdmin_Address);
+                this.Token = await new ethers.Contract(TransparentProxy_Address, abi.TokenV3, this.wallet);
+        });
+        it('Current implement logic is Token03',async()=>{
+                expect(await this.ProxyAdmin.getProxyImplementation(TransparentProxy_Address)).to.equal(Token03_Address);
         });
         it('Approve test',async()=>{
                 let input = await this.Token.connect(this.wallet).populateTransaction.approve(Token01_Address,1000);     
@@ -129,12 +178,90 @@ describe('Token02 - After upgrade test',()=>{
         });
         
         it('peg test', async ()=>{
-            var [_pegValue, _pegSender, _gluwaApproved, _luniverseApproved, _proccessed] = await this.Token.getPeg(peg_hash);
+                var randHash = await web3.utils.randomHex(32);
+                input = await this.Token.connect(this.wallet).populateTransaction.peg(randHash, peg_value, peg_sender);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.luniverseApprove(randHash);
+                await txn(input, TransparentProxy_Address);
+    
+                var [_pegValue, _pegSender, _gluwaApproved, _luniverseApproved, _proccessed] = await this.Token.getPeg(randHash);
+    
             
             expect(parseInt(_pegValue._hex, 16)).to.equal(peg_value);
             expect(_pegSender).to.equal(peg_sender);
             expect(_gluwaApproved).to.equal(gluwaApproved);
             expect(_luniverseApproved).to.equal(luniverseApproved);
             expect(_proccessed).to.equal(proccessed);
+        });
+
+        it('EthlessTransfer test', async ()=>{
+                var randHash = await web3.utils.randomHex(32);
+                input = await this.Token.connect(this.wallet).populateTransaction.peg(randHash, peg_value, this.wallet.address);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.luniverseApprove(randHash);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.gluwaApprove(randHash);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.mint(randHash);
+                await txn(input, TransparentProxy_Address);
+                currBalance = parseInt(await this.Token.balanceOf(peg_sender));
+
+                var nonce = Date.now();
+                
+                var signature = newSign.signTransfer(SigDomainTransfer, chainId, this.Token.address, this.wallet.address, privateKey, peg_sender, sendAmount - fee, fee, nonce);
+
+                input = await this.Token['transfer(address,address,uint256,uint256,uint256,bytes)'](this.wallet.address, peg_sender, sendAmount - fee, fee, nonce, signature, { from: this.wallet.address, gasLimit: 9000000 });
+                res1 = await this.provider.waitForTransaction(input.hash);
+
+                expect(parseInt(await this.Token.balanceOf(peg_sender))).to.equal(currBalance + sendAmount -fee);
+        });
+
+        it('EthlessBurn test', async ()=>{
+                var randHash = await web3.utils.randomHex(32);
+                input = await this.Token.connect(this.wallet).populateTransaction.peg(randHash, peg_value, this.wallet.address);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.luniverseApprove(randHash);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.gluwaApprove(randHash);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.mint(randHash);
+                await txn(input, TransparentProxy_Address);
+                currBalance = parseInt(await this.Token.balanceOf(this.wallet.address));
+                var nonce = Date.now();
+
+                var signature = newSign.signBurn(SigDomainBurn, chainId, this.Token.address, this.wallet.address, privateKey, sendAmount - fee, fee, nonce);
+
+                input = await this.Token['burn(address,uint256,uint256,uint256,bytes)'](this.wallet.address, sendAmount - fee, fee, nonce, signature, { from: this.wallet.address, gasLimit: 9000000 });
+                res1 = await this.provider.waitForTransaction(input.hash);
+                
+                expect(parseInt(await this.Token.balanceOf(this.wallet.address))).to.equal(currBalance - (sendAmount - fee - fee));
+        });
+
+        it('EthlessReserve test', async ()=>{
+                var randHash = await web3.utils.randomHex(32);
+                input = await this.Token.connect(this.wallet).populateTransaction.peg(randHash, peg_value, this.wallet.address);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.luniverseApprove(randHash);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.gluwaApprove(randHash);
+                await txn(input, TransparentProxy_Address);
+                input = await this.Token.connect(this.wallet).populateTransaction.mint(randHash);
+                await txn(input, TransparentProxy_Address);
+                currBalance = parseInt(await this.Token.balanceOf(this.wallet.address));
+                currReserved = parseInt(await this.Token.reservedOf(this.wallet.address));
+
+                var nonce = Date.now();
+                var latestBlock = await time.latestBlock();
+                var addBlocks = new BN('100');
+                var expiryBlockNum = latestBlock.add(addBlocks);
+                var expiryBlockNum = 9000000000000000;
+                
+                var signature = newSign.signReserve(SigDomainReserve, chainId, this.Token.address, this.wallet.address, privateKey, peg_sender, this.wallet.address, sendAmount - fee, fee, nonce, expiryBlockNum);
+
+                input = await this.Token.reserve(this.wallet.address, peg_sender, this.wallet.address, sendAmount - fee, fee, nonce, expiryBlockNum, signature, { from: this.wallet.address, gasLimit: 9000000 });
+                const result = await this.provider.waitForTransaction(input.hash);
+
+                expect(parseInt(await this.Token.balanceOf(this.wallet.address))).to.equal(currBalance - sendAmount);
+                expect(parseInt(await this.Token.reservedOf(this.wallet.address))).to.equal(currReserved + sendAmount);
         });
 });
