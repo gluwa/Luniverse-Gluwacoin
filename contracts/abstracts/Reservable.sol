@@ -3,6 +3,7 @@ pragma solidity ^0.5.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/cryptography/ECDSA.sol";
+import "../libs/GluwacoinModels.sol";
 import "./BeforeTransferERC20.sol";
 import "../Validate.sol";
 
@@ -71,6 +72,7 @@ contract Reservable is BeforeTransferERC20 {
 
     function reserve(address sender, address recipient, address executor, uint256 amount, uint256 fee, uint256 nonce,
         uint256 expiryBlockNum, bytes memory sig) public returns (bool success) {
+
         require(executor != address(0), "Reservable: cannot execute from zero address");
         require(expiryBlockNum > block.number, "Reservable: invalid block expiry number");
         require(_reserved[sender][nonce]._expiryBlockNum == 0, "Reservable: the sender used the nonce already");
@@ -79,7 +81,8 @@ contract Reservable is BeforeTransferERC20 {
         require(total >= 0, "Reservable: invalid reserve amount");
         require(_unreservedBalance(sender) >= total, "Reservable: insufficient unreserved balance");
 
-        bytes32 hash = keccak256(abi.encodePacked(address(this), sender, recipient, executor, amount, fee, nonce, expiryBlockNum));
+        uint256 chainId = chainId();
+        bytes32 hash = keccak256(abi.encodePacked(GluwacoinModels.SigDomain.Reserve, chainId, address(this), sender, recipient, executor, amount, fee, nonce, expiryBlockNum));
         Validate.validateSignature(hash, sender, sig);
 
         _reserved[sender][nonce] = Reservation(amount, fee, recipient, executor, expiryBlockNum,

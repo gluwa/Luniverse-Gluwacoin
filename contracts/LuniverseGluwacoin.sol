@@ -32,5 +32,42 @@ contract LuniverseGluwacoin is Initializable, ERC20Pausable, GluwaRole, Lunivers
         _addGluwa(_msgSender());
         _addLuniverse(_msgSender());
     }
+
+    function reserve(address sender, address recipient, address executor, uint256 amount, uint256 fee, uint256 nonce,
+        uint256 expiryBlockNum, bytes memory sig) public whenNotPaused returns (bool success) {
+        _useNonce(sender, 4, nonce); // 4 - Reserve
+        return super.reserve(sender,recipient,executor,amount,fee, nonce,expiryBlockNum,sig);
+    }
+
+    function burn(
+        address burner,
+        uint256 amount,
+        uint256 fee,
+        uint256 nonce,
+        bytes calldata sig
+    ) external whenNotPaused {
+        uint256 burnerBalance = balanceOf(burner);
+        require(
+            burnerBalance >= amount,
+            "ERC20Wrapper: burn amount exceed balance"
+        );
+        _useNonce(burner, 1, nonce); // 1 - Burn
+        uint256 chainId = chainId();
+        bytes32 hash = keccak256(
+            abi.encodePacked(
+                GluwacoinModels.SigDomain.Burn,
+                chainId,
+                address(this),
+                burner,
+                amount,
+                fee,
+                nonce
+            )
+        );
+        Validate.validateSignature(hash, burner, sig);
+        _collect(burner, fee);
+        _burn(burner, amount.sub(fee));
+    }
+    
     uint256[50] private __gap;
 }
