@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.5.0;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/cryptography/ECDSA.sol";
+pragma solidity 0.8.12;
+
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
+import "../libs/GluwacoinModels.sol";
 import "./BeforeTransferERC20.sol";
 import "../Validate.sol";
 
@@ -13,15 +14,15 @@ import "../Validate.sol";
  * the fund back to the `sender`.
  */
 contract Reservable is BeforeTransferERC20 {
-    using ECDSA for bytes32;
-    function __Reservable_init(string memory name_, string memory symbol_, uint8 decimals_, uint256 chainId_) internal initializer {
-        __Context_init_unchained();
-        __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_, chainId_);
+    using ECDSAUpgradeable for bytes32;
+
+    function __Reservable_init() internal onlyInitializing {
         __Reservable_init_unchained();
     }
 
-    function __Reservable_init_unchained() internal initializer {
+    function __Reservable_init_unchained() internal onlyInitializing {
     }
+
     enum ReservationStatus {
         Active,
         Reclaimed,
@@ -58,7 +59,7 @@ contract Reservable is BeforeTransferERC20 {
     /**
      * @dev Returns the amount of tokens owned by `account` deducted by the reserved amount.
      */
-    function balanceOf(address account) public view returns (uint256) {
+    function balanceOf(address account) virtual override public view returns (uint256) {
         return _unreservedBalance(account);
     }
 
@@ -70,21 +71,27 @@ contract Reservable is BeforeTransferERC20 {
     }
 
     function reserve(address sender, address recipient, address executor, uint256 amount, uint256 fee, uint256 nonce,
-        uint256 expiryBlockNum, bytes memory sig) public returns (bool success) {
+        uint256 expiryBlockNum, bytes memory sig) virtual public returns (bool success) {
+
         require(executor != address(0), "Reservable: cannot execute from zero address");
         require(expiryBlockNum > block.number, "Reservable: invalid block expiry number");
         require(_reserved[sender][nonce]._expiryBlockNum == 0, "Reservable: the sender used the nonce already");
 
-        uint256 total = amount.add(fee);
+        uint256 total;
+        unchecked {
+            total = amount + fee;
+        }
         require(total >= 0, "Reservable: invalid reserve amount");
         require(_unreservedBalance(sender) >= total, "Reservable: insufficient unreserved balance");
 
-        bytes32 hash = keccak256(abi.encodePacked(address(this), sender, recipient, executor, amount, fee, nonce, expiryBlockNum));
+        uint256 chainId = chainId();
+        bytes32 hash = keccak256(abi.encodePacked(GluwacoinModels.SigDomain.Reserve, chainId, address(this), sender, recipient, executor, amount, fee, nonce, expiryBlockNum));
         Validate.validateSignature(hash, sender, sig);
 
-        _reserved[sender][nonce] = Reservation(amount, fee, recipient, executor, expiryBlockNum,
-            ReservationStatus.Active);
-        _totalReserved[sender] = _totalReserved[sender].add(total);
+        _reserved[sender][nonce] = Reservation(amount, fee, recipient, executor, expiryBlockNum, ReservationStatus.Active);
+        unchecked {
+            _totalReserved[sender] = _totalReserved[sender] + total;
+        }
 
         return true;
     }
@@ -102,12 +109,13 @@ contract Reservable is BeforeTransferERC20 {
 
         uint256 fee = reservation._fee;
         uint256 amount = reservation._amount;
-        uint256 total = amount.add(fee);
         address recipient = reservation._recipient;
         address executor = reservation._executor;
 
         reservation._status = ReservationStatus.Completed;
-        _totalReserved[sender] = _totalReserved[sender].sub(total);
+        unchecked {
+            _totalReserved[sender] = _totalReserved[sender] - (amount + fee);
+        }
 
         _transfer(sender, executor, fee);
         _transfer(sender, recipient, amount);
@@ -130,16 +138,20 @@ contract Reservable is BeforeTransferERC20 {
         }
 
         reservation._status = ReservationStatus.Reclaimed;
-        _totalReserved[sender] = _totalReserved[sender].sub(reservation._amount).sub(reservation._fee);
+        unchecked {
+            _totalReserved[sender] = _totalReserved[sender] - (reservation._amount + reservation._fee);
+        }
 
         return true;
     }
 
     function _unreservedBalance(address account) internal view returns (uint256 amount) {
-        return BeforeTransferERC20.balanceOf(account).sub(_totalReserved[account]);
+        unchecked {
+            return super.balanceOf(account) - _totalReserved[account];
+        }
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal {
+    function _beforeTokenTransfer(address from, address to, uint256 amount) virtual override internal {
         if (from != address(0)) {
             require(_unreservedBalance(from) >= amount, "Reservable: transfer amount exceeds unreserved balance");
         }

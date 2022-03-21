@@ -1,29 +1,24 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.5.0;
 
-import "@openzeppelin/contracts/access/Roles.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "../abstracts/ContextUpgradeable.sol";
+pragma solidity 0.8.12;
 
-contract GluwaRole is ContextUpgradeable {
-    using Roles for Roles.Role;
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+
+contract GluwaRole is AccessControlUpgradeable {
+    
+    // ADMIN -> DEFAULT_ADMIN_ROLE
+    bytes32 public constant GLUWA_ROLE = keccak256("GLUWA_ROLE");
 
     event GluwaAdded(address indexed account);
     event GluwaRemoved(address indexed account);
 
-    Roles.Role private _Gluwas;
-
-    // constructor(address sender) public {
-    //     if (!isGluwa(sender)) {
-    //         _addGluwa(sender);
-    //     }
-    // }
-    function __GluwaRole_init() internal initializer {
-        __Context_init_unchained();
+    function __GluwaRole_init() internal onlyInitializing {
         __GluwaRole_init_unchained();
     }
 
-    function __GluwaRole_init_unchained() internal initializer {
+    function __GluwaRole_init_unchained() internal onlyInitializing {
+        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _addGluwa(_msgSender());
     }
 
     modifier onlyGluwa() {
@@ -32,7 +27,7 @@ contract GluwaRole is ContextUpgradeable {
     }
 
     function isGluwa(address account) public view returns (bool) {
-        return _Gluwas.has(account);
+        return hasRole(GLUWA_ROLE, account);
     }
 
     function addGluwa(address account) public onlyGluwa {
@@ -44,16 +39,21 @@ contract GluwaRole is ContextUpgradeable {
     }
 
     function renounceGluwa() public {
-        _removeGluwa(_msgSender());
+        _renounceGluwa(_msgSender());
     }
 
     function _addGluwa(address account) internal {
-        _Gluwas.add(account);
+        grantRole(GLUWA_ROLE, account);
         emit GluwaAdded(account);
     }
 
+    function _renounceGluwa(address account) private {
+        renounceRole(GLUWA_ROLE, account);
+        emit GluwaRemoved(account);
+    }
+
     function _removeGluwa(address account) internal {
-        _Gluwas.remove(account);
+        revokeRole(GLUWA_ROLE, account);
         emit GluwaRemoved(account);
     }
     

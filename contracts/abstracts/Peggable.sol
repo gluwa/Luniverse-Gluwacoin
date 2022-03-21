@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.5.0;
 
-import "./ContextUpgradeable.sol";
+pragma solidity 0.8.12;
+
 import "./BeforeTransferERC20.sol";
 import "../roles/GluwaRole.sol";
 import "../roles/LuniverseRole.sol";
@@ -15,16 +15,15 @@ import "../roles/LuniverseRole.sol";
  * You cannot process a peg more than once.
  */
 contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
-    function __Peggable_init(string memory name_, string memory symbol_, uint8 decimals_, uint256 chainId_) internal initializer {
-        __Context_init_unchained();
-        __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_, chainId_);
+    function __Peggable_init() internal onlyInitializing {
         __GluwaRole_init_unchained();
         __LuniverseRole_init_unchained();
         __Peggable_init_unchained();
     }
 
-    function __Peggable_init_unchained() internal initializer {
+    function __Peggable_init_unchained() internal onlyInitializing {
     }
+    
     struct Peg {
         uint256 _amount;
         address _sender;
@@ -50,13 +49,13 @@ contract Peggable is BeforeTransferERC20, GluwaRole, LuniverseRole {
         bool luniverseApproved, bool processed) {
         require(_pegged[txnHash]._sender != address(0), "Peggable: the txnHash is not pegged");
 
-        Peg memory peg = _pegged[txnHash];
+        Peg memory pullPeg = _pegged[txnHash];
 
-        amount = peg._amount;
-        sender = peg._sender;
-        gluwaApproved = peg._gluwaApproved;
-        luniverseApproved = peg._luniverseApproved;
-        processed = peg._processed;
+        amount = pullPeg._amount;
+        sender = pullPeg._sender;
+        gluwaApproved = pullPeg._gluwaApproved;
+        luniverseApproved = pullPeg._luniverseApproved;
+        processed = pullPeg._processed;
     }
 
     function peg(bytes32 txnHash, uint256 amount, address sender) public {

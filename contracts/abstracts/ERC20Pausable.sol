@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.5.0;
+pragma solidity 0.8.12;
 
-import "@openzeppelin/contracts/lifecycle/Pausable.sol";
-
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "./BeforeTransferERC20.sol";
 
 /**
@@ -13,7 +12,15 @@ import "./BeforeTransferERC20.sol";
  * period, or having an emergency switch for freezing all token transfers in the
  * event of a large bug.
  */
-contract ERC20Pausable is BeforeTransferERC20, Pausable {
+contract ERC20Pausable is BeforeTransferERC20, PausableUpgradeable {
+
+    function __ERC20Pausable_init() internal onlyInitializing {
+        __ERC20Pausable_init_unchained();
+    }
+    function __ERC20Pausable_init_unchained() internal onlyInitializing {
+        __Pausable_init();
+    }
+
     /**
      * @dev See {ERC20-_beforeTokenTransfer}.
      *
@@ -21,7 +28,7 @@ contract ERC20Pausable is BeforeTransferERC20, Pausable {
      *
      * - the contract must not be paused.
      */
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal {
+    function _beforeTokenTransfer(address from, address to, uint256 amount) virtual override internal {
         super._beforeTokenTransfer(from, to, amount);
 
         require(!paused(), "ERC20Pausable: token transfer while paused");
