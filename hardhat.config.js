@@ -17,12 +17,7 @@ let networkConfig = {
   hardhat: {},
 }
 // Kaleido
-if(
-  process.env.RPC_KALEIDO_USER !== undefined && process.env.RPC_KALEIDO_USER !== "" && 
-  process.env.RPC_KALEIDO_PASS !== undefined && process.env.RPC_KALEIDO_PASS !== "" && 
-  process.env.RPC_KALEIDO_ENDPOINT !== undefined && process.env.RPC_KALEIDO_ENDPOINT !== "" && 
-  process.env.KALEIDO_PRIVATEKEY !== undefined && process.env.KALEIDO_PRIVATEKEY !== ""
-) {
+if(process.env.RPC_KALEIDO_USER && process.env.RPC_KALEIDO_PASS && process.env.KALEIDO_PRIVATEKEY) {
   networkConfig = {
     ...networkConfig,
     kaleido: {
@@ -34,10 +29,7 @@ if(
   }
 }
 // Ethereum Mainet
-if(
-  process.env.RPC_ETHMAINNET !== undefined && process.env.RPC_ETHMAINNET !== "" && 
-  process.env.ETHMAINNET_PRIVATEKEY !== undefined && process.env.ETHMAINNET_PRIVATEKEY !== ""
-) {
+if(process.env.RPC_ETHMAINNET && process.env.ETHMAINNET_PRIVATEKEY) {
   networkConfig = {
     ...networkConfig,
     ethereum: {
@@ -49,10 +41,7 @@ if(
   }
 }
 // Ethereum Ropsten
-if(
-  process.env.RPC_ROPSTEN !== undefined && process.env.RPC_ROPSTEN !== "" && 
-  process.env.ROPSTEN_PRIVATEKEY !== undefined && process.env.ROPSTEN_PRIVATEKEY !== ""
-) {
+if(process.env.RPC_ROPSTEN && process.env.ROPSTEN_PRIVATEKEY) {
   networkConfig = {
     ...networkConfig,
     ropsten: {
@@ -64,10 +53,7 @@ if(
   }
 }
 // Ethereum Rinkeby
-if(
-  process.env.RPC_RINKEBY !== undefined && process.env.RPC_RINKEBY !== "" && 
-  process.env.RINKEBY_PRIVATEKEY !== undefined && process.env.RINKEBY_PRIVATEKEY !== ""
-) {
+if(process.env.RPC_RINKEBY && process.env.RINKEBY_PRIVATEKEY) {
   networkConfig = {
     ...networkConfig,
     rinkeby: {
@@ -79,10 +65,7 @@ if(
   }
 }
 // Ethereum Kovan
-if(
-  process.env.KOVAN_PRIVATEKEY !== undefined && process.env.KOVAN_PRIVATEKEY !== "" && 
-  process.env.RPC_KOVAN !== undefined && process.env.RPC_KOVAN !== ""
-) {
+if(process.env.KOVAN_PRIVATEKEY && process.env.RPC_KOVAN) {
   networkConfig = {
     ...networkConfig,
     kovan: {
@@ -94,10 +77,7 @@ if(
   }
 }
 // Polygon Mainnet
-if(
-  process.env.KOVAN_PRIVATEKEY !== undefined && process.env.KOVAN_PRIVATEKEY !== "" && 
-  process.env.RPC_KOVAN !== undefined && process.env.RPC_KOVAN !== ""
-) {
+if(process.env.POLYGONMAINNET_PRIVATEKEY && process.env.RPC_POLYGONMAINNET) {
   networkConfig = {
     ...networkConfig,
     polygon: {
@@ -109,10 +89,7 @@ if(
   }
 }
 // Polygon Mumbai
-if(
-  process.env.KOVAN_PRIVATEKEY !== undefined && process.env.KOVAN_PRIVATEKEY !== "" && 
-  process.env.RPC_KOVAN !== undefined && process.env.RPC_KOVAN !== ""
-) {
+if(process.env.POLYGONMUMBAI_PRIVATEKEY && process.env.RPC_POLYGONMUMBAI) {
   networkConfig = {
     ...networkConfig,
     mumbai: {
@@ -135,8 +112,7 @@ module.exports = {
       optimizer: {
         runs:20,
         enabled: true
-      },
-      evmVersion: "istanbul"
+      }
     }
   },
   mocha: {
