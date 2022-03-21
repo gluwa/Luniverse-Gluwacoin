@@ -13,6 +13,118 @@ task("accounts", "Prints the list of accounts", async () => {
   }
 });
 
+let networkConfig = {
+  hardhat: {},
+}
+// Kaleido
+if(
+  process.env.RPC_KALEIDO_USER !== undefined && process.env.RPC_KALEIDO_USER !== "" && 
+  process.env.RPC_KALEIDO_PASS !== undefined && process.env.RPC_KALEIDO_PASS !== "" && 
+  process.env.RPC_KALEIDO_ENDPOINT !== undefined && process.env.RPC_KALEIDO_ENDPOINT !== "" && 
+  process.env.KALEIDO_PRIVATEKEY !== undefined && process.env.KALEIDO_PRIVATEKEY !== ""
+) {
+  networkConfig = {
+    ...networkConfig,
+    kaleido: {
+      url: `https://${process.env.RPC_KALEIDO_USER}:${process.env.RPC_KALEIDO_PASS}@${process.env.RPC_KALEIDO_ENDPOINT}`,
+      chainId: 1245549440,
+      gas: 0,
+      accounts: [`${process.env.KALEIDO_PRIVATEKEY}`]
+    },
+  }
+}
+// Ethereum Mainet
+if(
+  process.env.RPC_ETHMAINNET !== undefined && process.env.RPC_ETHMAINNET !== "" && 
+  process.env.ETHMAINNET_PRIVATEKEY !== undefined && process.env.ETHMAINNET_PRIVATEKEY !== ""
+) {
+  networkConfig = {
+    ...networkConfig,
+    ethereum: {
+      url: `${process.env.RPC_ETHMAINNET}`,
+      chainId: 1,
+      gase: "auto",
+      accounts: [`${process.env.ETHMAINNET_PRIVATEKEY}`]
+    },
+  }
+}
+// Ethereum Ropsten
+if(
+  process.env.RPC_ROPSTEN !== undefined && process.env.RPC_ROPSTEN !== "" && 
+  process.env.ROPSTEN_PRIVATEKEY !== undefined && process.env.ROPSTEN_PRIVATEKEY !== ""
+) {
+  networkConfig = {
+    ...networkConfig,
+    ropsten: {
+      url: `${process.env.RPC_ROPSTEN}`,
+      chainId: 3,
+      gase: "auto",
+      accounts: [`${process.env.ROPSTEN_PRIVATEKEY}`]
+    },
+  }
+}
+// Ethereum Rinkeby
+if(
+  process.env.RPC_RINKEBY !== undefined && process.env.RPC_RINKEBY !== "" && 
+  process.env.RINKEBY_PRIVATEKEY !== undefined && process.env.RINKEBY_PRIVATEKEY !== ""
+) {
+  networkConfig = {
+    ...networkConfig,
+    rinkeby: {
+      url: `${process.env.RPC_RINKEBY}`,
+      chainId: 4,
+      gase: "auto",
+      accounts: [`${process.env.RINKEBY_PRIVATEKEY}`]
+    },
+  }
+}
+// Ethereum Kovan
+if(
+  process.env.KOVAN_PRIVATEKEY !== undefined && process.env.KOVAN_PRIVATEKEY !== "" && 
+  process.env.RPC_KOVAN !== undefined && process.env.RPC_KOVAN !== ""
+) {
+  networkConfig = {
+    ...networkConfig,
+    kovan: {
+      url: `${process.env.RPC_KOVAN}`,
+      chainId: 42,
+      gase: "auto",
+      accounts: [`${process.env.KOVAN_PRIVATEKEY}`]
+    },
+  }
+}
+// Polygon Mainnet
+if(
+  process.env.KOVAN_PRIVATEKEY !== undefined && process.env.KOVAN_PRIVATEKEY !== "" && 
+  process.env.RPC_KOVAN !== undefined && process.env.RPC_KOVAN !== ""
+) {
+  networkConfig = {
+    ...networkConfig,
+    polygon: {
+      url: process.env.RPC_POLYGONMAINNET,
+      chainId: 137,
+      gase: "auto",
+      accounts: [`${process.env.POLYGONMAINNET_PRIVATEKEY}`]
+    },
+  }
+}
+// Polygon Mumbai
+if(
+  process.env.KOVAN_PRIVATEKEY !== undefined && process.env.KOVAN_PRIVATEKEY !== "" && 
+  process.env.RPC_KOVAN !== undefined && process.env.RPC_KOVAN !== ""
+) {
+  networkConfig = {
+    ...networkConfig,
+    mumbai: {
+      url: process.env.RPC_POLYGONMUMBAI,
+      chainId: 80001,
+      gase: "auto",
+      accounts: [`${process.env.POLYGONMUMBAI_PRIVATEKEY}`]
+    },
+  }
+}
+
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -30,43 +142,5 @@ module.exports = {
   mocha: {
     timeout: 2000000
   },
-  networks: {
-    hardhat: {},
-    kaleido: {
-      url: `https://${process.env.RPC_KALEIDO_USER}:${process.env.RPC_KALEIDO_PASS}@${process.env.RPC_KALEIDO_ENDPOINT}`,
-      chainId: 1245549440,
-      gas: 0,
-      accounts: [`${process.env.KALEIDO_PRIVATEKEY}`]
-    },
-    ropsten: {
-      url: `${process.env.RPC_ROPSTEN}`,
-      chainId: 3,
-      gase: "auto",
-      accounts: [`${process.env.KALEIDO_PRIVATEKEY}`]
-    },
-    rinkeby: {
-      url: `${process.env.RPC_RINKEBY}`,
-      chainId: 4,
-      gase: "auto",
-      accounts: [`${process.env.KALEIDO_PRIVATEKEY}`]
-    },
-    kovan: {
-      url: `${process.env.RPC_KOVAN}`,
-      chainId: 42,
-      gase: "auto",
-      accounts: [`${process.env.KALEIDO_PRIVATEKEY}`]
-    },
-    polygon: {
-      url: process.env.RPC_POLYGONMAINNET,
-      chainId: 137,
-      gase: "auto",
-      accounts: [`${process.env.KALEIDO_PRIVATEKEY}`]
-    },
-    mumbai: {
-      url: process.env.RPC_POLYGONMUMBAI,
-      chainId: 80001,
-      gase: "auto",
-      accounts: [`${process.env.KALEIDO_PRIVATEKEY}`]
-    },
-  }
+  networks: networkConfig
 };

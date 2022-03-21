@@ -196,3 +196,5 @@ fabric.properties
 .openzeppelin/
 build/
 .openzeppelin/.session
+artifacts/
+cache/

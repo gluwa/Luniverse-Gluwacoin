@@ -7,8 +7,50 @@ console.log('\x1b[32m%s\x1b[0m', 'Connected to network: ', hre.network.name, hre
 
 const fileContractsAddressDeployed = 'contractsAddressDeployed.json';
 
-const privateKey = `${process.env.KALEIDO_PRIVATEKEY}`;
-const userKey = `${process.env.KALEIDO_PRIVATEKEY}`;  
+// Hardhat default account(0)
+let privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+let userKey = '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266';
+let rpcUrl = '';
+
+if(hre.network.name === 'kaleido') {
+    privateKey = `${process.env.KALEIDO_PRIVATEKEY}`;
+    userKey = `${process.env.KALEIDO_PRIVATEKEY}`;
+
+    const USER = `${process.env.RPC_KALEIDO_USER}`;
+    const PASS = `${process.env.RPC_KALEIDO_PASS}`;
+    const RPC_ENDPOINT = `https://${process.env.RPC_KALEIDO_ENDPOINT}`;
+    rpcUrl = {url: RPC_ENDPOINT, user: USER, password: PASS};
+}
+if(hre.network.name === 'ethereum') {
+    privateKey = `${process.env.ETHMAINNET_PRIVATEKEY}`;
+    userKey = `${process.env.ETHMAINNET_PRIVATEKEY}`;
+    rpcUrl = `${process.env.RPC_ETHMAINNET}`;
+}
+if(hre.network.name === 'ropsten') {
+    privateKey = `${process.env.ROPSTEN_PRIVATEKEY}`;
+    userKey = `${process.env.ROPSTEN_PRIVATEKEY}`;
+    rpcUrl = `${process.env.RPC_ROPSTEN}`;
+}
+if(hre.network.name === 'rinkeby') {
+    privateKey = `${process.env.RINKEBY_PRIVATEKEY}`;
+    userKey = `${process.env.RINKEBY_PRIVATEKEY}`;
+    rpcUrl = `${process.env.RPC_RINKEBY}`;
+}
+if(hre.network.name === 'kovan') {
+    privateKey = `${process.env.KOVAN_PRIVATEKEY}`;
+    userKey = `${process.env.KOVAN_PRIVATEKEY}`;
+    rpcUrl = `${process.env.RPC_KOVAN}`;
+}
+if(hre.network.name === 'polygon') {
+    privateKey = `${process.env.POLYGONMAINNET_PRIVATEKEY}`;
+    userKey = `${process.env.POLYGONMAINNET_PRIVATEKEY}`;
+    rpcUrl = `${process.env.RPC_POLYGONMAINNET}`;
+}
+if(hre.network.name === 'mumbai') {
+    privateKey = `${process.env.POLYGONMUMBAI_PRIVATEKEY}`;
+    userKey = `${process.env.POLYGONMUMBAI_PRIVATEKEY}`;
+    rpcUrl = `${process.env.RPC_POLYGONMUMBAI}`;
+}
 
 let ContractAddress = {
     ProxyAdmin_Address: '0x417c4C7298F20351b3d8F45ce20E32A9026BC31b'
@@ -44,13 +86,8 @@ if (fs.existsSync(fileContractsAddressDeployed)) {
         })
 }
 
-const USER = `${process.env.RPC_KALEIDO_USER}`;
-const PASS = `${process.env.RPC_KALEIDO_PASS}`;
-const RPC_ENDPOINT = `https://${process.env.RPC_KALEIDO_ENDPOINT}`;
-const url = {url: RPC_ENDPOINT, user: USER, password: PASS};
-
 module.exports= async () => {
-    var provider = new ethers.providers.JsonRpcProvider(url);
+    var provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     var owner = new ethers.Wallet(privateKey, provider);
     var user1 = new ethers.Wallet(userKey, provider);
     

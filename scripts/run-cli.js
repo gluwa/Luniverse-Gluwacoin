@@ -1,6 +1,10 @@
 const inquirer = require('inquirer')
 const fs = require('fs')
 const spawn = require('child_process').spawn
+const path = require('path');
+const ScriptHelper = require('./shared');
+let reqPath = path.join(__dirname, '../');
+require('dotenv').config({path:reqPath+'/.env.development'});
 
 const fileContractsAddressDeployed = 'contractsAddressDeployed.json';
 const fileContractsAddressDeployedHistory = 'contractsAddressDeployedHistory.json';
@@ -26,6 +30,9 @@ if(fs.existsSync(fileContractsAddressDeployedHistory)) {
     inquirerFileContractsAddressDeployedHistory = 'Get all the previously deployed contracts address'
 }
 
+
+const { kaleido, ethMainnet, ropsten, rinkeby, kovan, polygon, mumbai } = ScriptHelper.missingEnvVariables();
+
 const contractsList = [
     'All contracts',
     'Luniverse-Gluwacoin',
@@ -33,13 +40,13 @@ const contractsList = [
 ]
 const networksList = [
     'Local',
-    'Kaleido',
-    'Ethereum Mainet',
-    'Ethereum Ropsten',
-    'Ethereum Rinkeby',
-    'Ethereum Kovan',
-    'Polygon Mainet',
-    'Polygon Mumbai'
+    kaleido,
+    ethMainnet,
+    ropsten,
+    rinkeby,
+    kovan,
+    polygon,
+    mumbai
 ]
 
 const networkSelectionAndSpawn = (command, firstCommand) => {
@@ -55,6 +62,9 @@ const networkSelectionAndSpawn = (command, firstCommand) => {
         ]).then((networkAsnwer) => {
             if(networkAsnwer.networks === 'Kaleido') {
                 commandFlag = ' --network kaleido'
+            }
+            if(networkAsnwer.networks === 'Ethereum Mainet') {
+                commandFlag = ' --network ethereum'
             }
             if(networkAsnwer.networks === 'Ethereum Ropsten') {
                 commandFlag = ' --network ropsten'
@@ -95,6 +105,7 @@ inquirer
         name: 'action',
         message: 'What will you like to do?',
         choices: [
+            'Setup environment variables',
             'Run tests',
             'Deploy contracts',
             'Upgrade contracts',
@@ -111,6 +122,161 @@ inquirer
     .then((answer) => {
         let command = 'npx hardhat compile';
         
+        if(answer.action == 'Setup environment variables') {
+            let allEnv = {
+                RPC_ETHMAINNET: "",
+                ETHMAINNET_PRIVATEKEY: "",
+                RPC_ROPSTEN: "",
+                ROPSTEN_PRIVATEKEY: "",
+                RPC_RINKEBY: "",
+                RINKEBY_PRIVATEKEY: "",
+                RPC_KOVAN: "",
+                KOVAN_PRIVATEKEY: "",
+                RPC_POLYGONMAINNET: "",
+                POLYGONMAINNET_PRIVATEKEY: "",
+                RPC_POLYGONMUMBAI: "",
+                POLYGONMUMBAI_PRIVATEKEY: "",
+                RPC_KALEIDO_USER: "",
+                RPC_KALEIDO_PASS: "",
+                RPC_KALEIDO_ENDPOINT: "",
+                KALEIDO_PRIVATEKEY: ""
+            }
+            inquirer
+                .prompt([
+                    // Ethereum Mainnet
+                    {
+                        type: 'input',
+                        name: 'rpcEthereum',
+                        message: 'RPC URL for Ethereum Mainnet',
+                        default: process.env.RPC_ETHMAINNET
+                    },
+                    {
+                        type: 'input',
+                        name: 'privateKeyEthereum',
+                        message: 'Private Key for Ethereum Mainnet',
+                        default: process.env.ETHMAINNET_PRIVATEKEY
+                    },
+                    // Ethereum Ropsten
+                    {
+                        type: 'input',
+                        name: 'rpcRopsten',
+                        message: 'RPC URL for Ethereum Ropsten',
+                        default: process.env.RPC_ROPSTEN
+                    },
+                    {
+                        type: 'input',
+                        name: 'privateKeyRopsten',
+                        message: 'Private Key for Ethereum Ropsten',
+                        default: process.env.ROPSTEN_PRIVATEKEY
+                    },
+                    // Ethereum Rinkeby
+                    {
+                        type: 'input',
+                        name: 'rpcRinkeby',
+                        message: 'RPC URL for Ethereum Rinkeby',
+                        default: process.env.RPC_RINKEBY
+                    },
+                    {
+                        type: 'input',
+                        name: 'privateKeyRinkeby',
+                        message: 'Private Key for Ethereum Rinkeby',
+                        default: process.env.RINKEBY_PRIVATEKEY
+                    },
+                    // Ethereum Kovan
+                    {
+                        type: 'input',
+                        name: 'rpcKovan',
+                        message: 'RPC URL for Ethereum Kovan',
+                        default: process.env.RPC_KOVAN
+                    },
+                    {
+                        type: 'input',
+                        name: 'privateKeyKovan',
+                        message: 'Private Key for Ethereum Kovan',
+                        default: process.env.KOVAN_PRIVATEKEY
+                    },
+                    // Polygon Mainnet
+                    {
+                        type: 'input',
+                        name: 'rpcPolygon',
+                        message: 'RPC URL for Polygon Mainnet',
+                        default: process.env.RPC_POLYGONMAINNET
+                    },
+                    {
+                        type: 'input',
+                        name: 'privateKeyPolygon',
+                        message: 'Private Key for Polygon Mainnet',
+                        default: process.env.POLYGONMAINNET_PRIVATEKEY
+                    },
+                    // Polygon Mumbai
+                    {
+                        type: 'input',
+                        name: 'rpcMumbai',
+                        message: 'RPC URL for Polygon Mumbai',
+                        default: process.env.RPC_POLYGONMUMBAI
+                    },
+                    {
+                        type: 'input',
+                        name: 'privateKeyMumbai',
+                        message: 'Private Key for Polygon Mumbai',
+                        default: process.env.POLYGONMUMBAI_PRIVATEKEY
+                    },
+                    // Kaleido
+                    {
+                        type: 'input',
+                        name: 'rpcUserKaleido',
+                        message: 'RPC USER for Kaleido',
+                        default: process.env.RPC_KALEIDO_USER
+                    },
+                    {
+                        type: 'input',
+                        name: 'rpcPassKaleido',
+                        message: 'RPC PASS for Kaleido',
+                        default: process.env.RPC_KALEIDO_PASS
+                    },
+                    {
+                        type: 'input',
+                        name: 'rpcEndpointKaleido',
+                        message: 'RPC ENDPOINT for Kaleido',
+                        default: process.env.RPC_KALEIDO_ENDPOINT
+                    },
+                    {
+                        type: 'input',
+                        name: 'privateKeyKaleido',
+                        message: 'Private Key for Kaleido',
+                        default: process.env.KALEIDO_PRIVATEKEY
+                    },
+                ]).then((envVariables) => {
+                    // Ethereum Mainnet
+                    allEnv.RPC_ETHMAINNET = envVariables.rpcEthereum;
+                    allEnv.ETHMAINNET_PRIVATEKEY = envVariables.privateKeyEthereum;
+                    // Ethereum Ropsten
+                    allEnv.RPC_ROPSTEN = envVariables.rpcRopsten;
+                    allEnv.ROPSTEN_PRIVATEKEY = envVariables.privateKeyRopsten;
+                    // Ethereum Rinkeby
+                    allEnv.RPC_RINKEBY = envVariables.rpcRinkeby;
+                    allEnv.RINKEBY_PRIVATEKEY = envVariables.privateKeyRinkeby;
+                    // Ethereum Kovan
+                    allEnv.RPC_KOVAN = envVariables.rpcKovan;
+                    allEnv.KOVAN_PRIVATEKEY = envVariables.privateKeyKovan;
+                    // Polygon Mainnet
+                    allEnv.RPC_POLYGONMAINNET = envVariables.rpcPolygon;
+                    allEnv.POLYGONMAINNET_PRIVATEKEY = envVariables.privateKeyPolygon;
+                    // Polygon Mumbai
+                    allEnv.RPC_POLYGONMUMBAI = envVariables.rpcMumbai;
+                    allEnv.POLYGONMUMBAI_PRIVATEKEY = envVariables.privateKeyMumbai;
+                    // Kaleido
+                    allEnv.RPC_KALEIDO_USER = envVariables.rpcUserKaleido;
+                    allEnv.RPC_KALEIDO_PASS = envVariables.rpcPassKaleido;
+                    allEnv.RPC_KALEIDO_ENDPOINT = envVariables.rpcEndpointKaleido;
+                    allEnv.KALEIDO_PRIVATEKEY = envVariables.privateKeyKaleido;
+                    ScriptHelper.writeEnvFile(allEnv);
+                    spawn('node scripts/run-cli.js', {
+                        stdio: 'inherit',
+                        shell: true
+                    });
+                });
+        }
         if(answer.action == 'Run tests') {
             inquirer
                 .prompt([

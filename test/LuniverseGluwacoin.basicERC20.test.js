@@ -330,6 +330,11 @@ describe('LuniverseGluwacoin - Basic ERC20 function', function () {
                         const peg = await gluwaCoin.getPeg(randHashOwner, { from : owner.addres });
                         expect(peg.luniverseApproved).to.be.equal(true);
                 });
+                it('isPegged return false if the peg do not exist', async () => {
+                        const randHashOwner = await ethers.utils.randomBytes(32);
+
+                        expect(await gluwaCoin.isPegged(randHashOwner)).to.be.equal(false);
+                });
         });
                 
         describe('Mint & Burn', () => {
