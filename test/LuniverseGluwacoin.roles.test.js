@@ -213,62 +213,110 @@ describe('LuniverseGluwacoin - Roles', function () {
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const pegAmount = 1000;
                 
-                        await gluwaCoin.peg(randHashOwner, pegAmount, owner.address, { from : owner.address });
-                        await gluwaCoin.gluwaApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.luniverseApprove(randHashOwner, { from : owner.address });
+                        const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, pegAmount, owner.address);
+                        await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
+                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
+                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
                 
                         if(!await gluwaCoin.paused()) {
-                                await gluwaCoin.pause({ from : owner.address });
+                                const inputPause = await gluwaCoin.connect(owner).populateTransaction.pause();
+                                await TestHelper.checkResult(inputPause, gluwaCoin.address, owner, ethers, provider, 0);
                         }
                         expect(await gluwaCoin.paused()).to.be.equal(true);
 
                         const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
                         await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 'ERC20Pausable: token transfer while paused');
+
+                        if(gluwaInfo.network !== "hardhat" && (await gluwaCoin.paused() == true)) {
+                                let inputUnpause = await gluwaCoin.connect(owner).populateTransaction.unpause();
+                                await TestHelper.checkResult(inputUnpause, gluwaCoin.address, owner, ethers, provider, 0);
+                                expect(await gluwaCoin.paused()).to.equal(false);
+                        }
                 });
                 it('cannot burn when paused', async function () {
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const pegAmount = 1000;
                 
-                        await gluwaCoin.peg(randHashOwner, pegAmount, owner.address, { from : owner.address });
-                        await gluwaCoin.gluwaApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.luniverseApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.mint(randHashOwner, { from : owner.address });
+                        const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, pegAmount, owner.address);
+                        await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
+                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
+                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
+                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
                 
                         if(!await gluwaCoin.paused()) {
-                                await gluwaCoin.pause({ from : owner.address });
+                                const inputPause = await gluwaCoin.connect(owner).populateTransaction.pause();
+                                await TestHelper.checkResult(inputPause, gluwaCoin.address, owner, ethers, provider, 0);
                         }
                         expect(await gluwaCoin.paused()).to.be.equal(true);
                         
                         const input = await gluwaCoin.connect(owner).populateTransaction['burn(uint256)'](pegAmount);
                         await TestHelper.checkResult(input, gluwaCoin.address, owner, ethers, provider, 'ERC20Pausable: token transfer while paused');
+                        
+                        if(gluwaInfo.network !== "hardhat" && (await gluwaCoin.paused() == true)) {
+                                let inputUnpause = await gluwaCoin.connect(owner).populateTransaction.unpause();
+                                await TestHelper.checkResult(inputUnpause, gluwaCoin.address, owner, ethers, provider, 0);
+                                expect(await gluwaCoin.paused()).to.equal(false);
+                        }
                 });
                 it('cannot transfer when paused', async function () {
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const pegAmount = 1000;
                 
-                        await gluwaCoin.peg(randHashOwner, pegAmount, owner.address, { from : owner.address });
-                        await gluwaCoin.gluwaApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.luniverseApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.mint(randHashOwner, { from : owner.address });
+                        const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, pegAmount, owner.address);
+                        await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
+                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
+                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
+                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
                 
                         if(!await gluwaCoin.paused()) {
-                                await gluwaCoin.pause({ from : owner.address });
+                                const inputPause = await gluwaCoin.connect(owner).populateTransaction.pause();
+                                await TestHelper.checkResult(inputPause, gluwaCoin.address, owner, ethers, provider, 0);
                         }
                         const inputTransfer = await gluwaCoin.connect(owner).populateTransaction['transfer(address,uint256)'](user1.address, pegAmount, { from: owner.address });
                         await TestHelper.checkResult(inputTransfer, gluwaCoin.address, owner, ethers, provider, 'ERC20Pausable: token transfer while paused');
+                        
+                        if(gluwaInfo.network !== "hardhat" && (await gluwaCoin.paused() == true)) {
+                                let inputUnpause = await gluwaCoin.connect(owner).populateTransaction.unpause();
+                                await TestHelper.checkResult(inputUnpause, gluwaCoin.address, owner, ethers, provider, 0);
+                                expect(await gluwaCoin.paused()).to.equal(false);
+                        }
                 });
         
                 it('cannot ETHless reserve when paused', async function () {
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const pegAmount = 1000;
                 
-                        await gluwaCoin.peg(randHashOwner, pegAmount, owner.address, { from : owner.address });
-                        await gluwaCoin.gluwaApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.luniverseApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.mint(randHashOwner, { from : owner.address });
+                        const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, pegAmount, owner.address);
+                        await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
+                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
+                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
+                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
                 
                         if(!await gluwaCoin.paused()) {
-                                await gluwaCoin.pause({ from : owner.address });
+                                const inputPause = await gluwaCoin.connect(owner).populateTransaction.pause();
+                                await TestHelper.checkResult(inputPause, gluwaCoin.address, owner, ethers, provider, 0);
                         }
                         const feeToPay = 10;
                         const nounce = Date.now();
@@ -287,19 +335,33 @@ describe('LuniverseGluwacoin - Roles', function () {
                                 expirationBlock, 
                                 signature, { from: owner.address, gasLimit: ethers.utils.hexlify(3000000) });
                         await TestHelper.checkResult(input, gluwaCoin.address, owner, ethers, provider, 'Pausable: paused');
+                        
+                        if(gluwaInfo.network !== "hardhat" && (await gluwaCoin.paused() == true)) {
+                                let inputUnpause = await gluwaCoin.connect(owner).populateTransaction.unpause();
+                                await TestHelper.checkResult(inputUnpause, gluwaCoin.address, owner, ethers, provider, 0);
+                                expect(await gluwaCoin.paused()).to.equal(false);
+                        }
                 });
         
                 it('cannot ETHless transfer when paused', async function () {
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const pegAmount = 1000;
                 
-                        await gluwaCoin.peg(randHashOwner, pegAmount, owner.address, { from : owner.address });
-                        await gluwaCoin.gluwaApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.luniverseApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.mint(randHashOwner, { from : owner.address });
+                        const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, pegAmount, owner.address);
+                        await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
+                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
+                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
+                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
                 
                         if(!await gluwaCoin.paused()) {
-                                await gluwaCoin.pause({ from : owner.address });
+                                const inputPause = await gluwaCoin.connect(owner).populateTransaction.pause();
+                                await TestHelper.checkResult(inputPause, gluwaCoin.address, owner, ethers, provider, 0);
                         }
                         const feeToPay = 10;
                         const nounce = Date.now();
@@ -314,19 +376,33 @@ describe('LuniverseGluwacoin - Roles', function () {
                                 nounce, 
                                 signature, { from: owner.address });
                         await TestHelper.checkResult(input, gluwaCoin.address, owner, ethers, provider, 'ERC20Pausable: token transfer while paused');
+                        
+                        if(gluwaInfo.network !== "hardhat" && (await gluwaCoin.paused() == true)) {
+                                let inputUnpause = await gluwaCoin.connect(owner).populateTransaction.unpause();
+                                await TestHelper.checkResult(inputUnpause, gluwaCoin.address, owner, ethers, provider, 0);
+                                expect(await gluwaCoin.paused()).to.equal(false);
+                        }
                 });
         
                 it('cannot ETHless burn when paused', async function () {
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const pegAmount = 1000;
                 
-                        await gluwaCoin.peg(randHashOwner, pegAmount, owner.address, { from : owner.address });
-                        await gluwaCoin.gluwaApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.luniverseApprove(randHashOwner, { from : owner.address });
-                        await gluwaCoin.mint(randHashOwner, { from : owner.address });
+                        const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, pegAmount, owner.address);
+                        await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
+                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
+                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
+
+                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
+                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
                 
                         if(!await gluwaCoin.paused()) {
-                                await gluwaCoin.pause({ from : owner.address });
+                                const inputPause = await gluwaCoin.connect(owner).populateTransaction.pause();
+                                await TestHelper.checkResult(inputPause, gluwaCoin.address, owner, ethers, provider, 0);
                         }
                         const feeToPay = 100;
                         const nounce = Date.now();
@@ -340,6 +416,12 @@ describe('LuniverseGluwacoin - Roles', function () {
                                 nounce, 
                                 signature, { from: owner.address });
                         await TestHelper.checkResult(input, gluwaCoin.address, owner, ethers, provider, 'Pausable: paused');
+                        
+                        if(gluwaInfo.network !== "hardhat" && (await gluwaCoin.paused() == true)) {
+                                let inputUnpause = await gluwaCoin.connect(owner).populateTransaction.unpause();
+                                await TestHelper.checkResult(inputUnpause, gluwaCoin.address, owner, ethers, provider, 0);
+                                expect(await gluwaCoin.paused()).to.equal(false);
+                        }
                 });
         });
 });

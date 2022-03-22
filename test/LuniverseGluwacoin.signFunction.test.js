@@ -438,16 +438,6 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                                         const randHashOwner = await ethers.utils.randomBytes(32);
                                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, i, owner.address);
                                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
-                                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
                                 }
                         }
                     
@@ -502,16 +492,6 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                                         const randHashOwner = await ethers.utils.randomBytes(32);
                                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, i, owner.address);
                                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
-                                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
                                 }
                         }
                     
@@ -565,16 +545,6 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                                         const randHashOwner = await ethers.utils.randomBytes(32);
                                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, i, owner.address);
                                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
-                                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
                                 }
                         }
                         
@@ -641,16 +611,6 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                                         const randHashOwner = await ethers.utils.randomBytes(32);
                                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, i, owner.address);
                                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
-
-                                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-
-                                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-
-                                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
-                                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
-
                                 }
                         }
 
@@ -715,16 +675,6 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                                         const randHashOwner = await ethers.utils.randomBytes(32);
                                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, i, owner.address);
                                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputLuniverseApproveOwner = await gluwaCoin.connect(owner).populateTransaction.luniverseApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputLuniverseApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputGluwaApproveOwner = await gluwaCoin.connect(owner).populateTransaction.gluwaApprove(randHashOwner);
-                                        await TestHelper.checkResult(inputGluwaApproveOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
-                                        const inputMintOwner = await gluwaCoin.connect(owner).populateTransaction.mint(randHashOwner);
-                                        await TestHelper.checkResult(inputMintOwner, gluwaCoin.address, owner, ethers, provider, 0);
-                
                                 }
                         }
                         
