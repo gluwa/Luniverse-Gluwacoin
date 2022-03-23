@@ -136,15 +136,15 @@ contract Reservable is BeforeTransferERC20 {
         }
 
         reservation._status = ReservationStatus.Reclaimed;
-        _totalReserved[sender] = _totalReserved[sender] - (reservation._amount + reservation._fee);
+        unchecked {
+            _totalReserved[sender] = _totalReserved[sender] - (reservation._amount + reservation._fee);
+        }
 
         return true;
     }
 
     function _unreservedBalance(address account) internal view returns (uint256 amount) {
-        unchecked {
-            return super.balanceOf(account) - _totalReserved[account];
-        }
+        return super.balanceOf(account) - _totalReserved[account];
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) virtual override internal {
