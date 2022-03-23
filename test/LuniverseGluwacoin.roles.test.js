@@ -320,7 +320,10 @@ describe('LuniverseGluwacoin - Roles', function () {
                         }
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -365,7 +368,10 @@ describe('LuniverseGluwacoin - Roles', function () {
                         }
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const signature = SignHelper.signTransfer(3, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, user1.address, pegAmount, feeToPay, nounce);
                         let input = await gluwaCoin.connect(owner).populateTransaction['transfer(address,address,uint256,uint256,uint256,bytes)'](
@@ -406,7 +412,10 @@ describe('LuniverseGluwacoin - Roles', function () {
                         }
                         const feeToPay = 100;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, pegAmount, feeToPay, nounce);
                         let input = await gluwaCoin.connect(owner).populateTransaction['burn(address,uint256,uint256,uint256,bytes)'](

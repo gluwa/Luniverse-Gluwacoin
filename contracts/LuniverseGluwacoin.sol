@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.12;
 
-import "./abstracts/ERC20Pausable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "./abstracts/Burnable.sol";
 import "./abstracts/ETHlessTransfer.sol";
 import "./abstracts/Peggable.sol";
@@ -15,7 +15,7 @@ import "./roles/LuniverseRole.sol";
  *
  * At construction, the deployer of the contract is the only minter.
  */
-contract LuniverseGluwacoin is ERC20Pausable, GluwaRole, LuniverseRole, Burnable, Peggable, Reservable, ETHlessTransfer {
+contract LuniverseGluwacoin is PausableUpgradeable, GluwaRole, LuniverseRole, Burnable, Peggable, Reservable, ETHlessTransfer {
 
     function initialize(string memory name, string memory symbol, uint8 decimals) public initializer {
         __LuniverseGluwacoin_init_unchained(name, symbol, decimals);
@@ -26,7 +26,7 @@ contract LuniverseGluwacoin is ERC20Pausable, GluwaRole, LuniverseRole, Burnable
         __GluwaRole_init();
         __LuniverseRole_init();
         __BeforeTransferERC20_init(name, symbol, decimals);
-        __ERC20Pausable_init();
+        __Pausable_init();
         __ERC20Burnable_init();
         __ETHlessTransfer_init();
         __Peggable_init();
@@ -51,7 +51,9 @@ contract LuniverseGluwacoin is ERC20Pausable, GluwaRole, LuniverseRole, Burnable
         super._burn(account, amount);
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 amount) override(Reservable, ERC20Pausable, ERC20Upgradeable) internal {
+    function _beforeTokenTransfer(address from, address to, uint256 amount) override(Reservable, ERC20Upgradeable) internal {
+        require(!super.paused(), "ERC20Pausable: token transfer while paused");
+
         return super._beforeTokenTransfer(from, to, amount);
     }
 

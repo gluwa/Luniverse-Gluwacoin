@@ -89,9 +89,7 @@ contract Reservable is BeforeTransferERC20 {
         Validate.validateSignature(hash, sender, sig);
 
         _reserved[sender][nonce] = Reservation(amount, fee, recipient, executor, expiryBlockNum, ReservationStatus.Active);
-        unchecked {
-            _totalReserved[sender] = _totalReserved[sender] + total;
-        }
+        _totalReserved[sender] = _totalReserved[sender] + total;
 
         return true;
     }
@@ -138,9 +136,7 @@ contract Reservable is BeforeTransferERC20 {
         }
 
         reservation._status = ReservationStatus.Reclaimed;
-        unchecked {
-            _totalReserved[sender] = _totalReserved[sender] - (reservation._amount + reservation._fee);
-        }
+        _totalReserved[sender] = _totalReserved[sender] - (reservation._amount + reservation._fee);
 
         return true;
     }

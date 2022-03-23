@@ -9,4 +9,5 @@ import "./LuniverseGluwacoin.sol";
  */
 contract SandboxLuniverseGluwacoin is LuniverseGluwacoin {
 
+    uint256[50] private __gap;
 }

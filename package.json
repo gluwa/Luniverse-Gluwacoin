@@ -33,7 +33,7 @@
   },
   "scripts": {
     "test": "npx hardhat test",
-    "cli": "npx hardhat run scripts/run-cli.js"
+    "cli": "node scripts/run-cli.js"
   },
   "repository": {
     "type": "git",

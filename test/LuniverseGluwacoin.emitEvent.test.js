@@ -138,7 +138,10 @@ describe('LuniverseGluwacoin - Events', function () {
                         const amounToBurn = 1000;
                         const feeToPay = 100;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amounToBurn, feeToPay, nounce);
 
@@ -228,7 +231,10 @@ describe('LuniverseGluwacoin - Events', function () {
                         const amounToTransfer = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const signature = SignHelper.signTransfer(3, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, user1.address, amounToTransfer, feeToPay, nounce);
 
@@ -266,7 +272,10 @@ describe('LuniverseGluwacoin - Events', function () {
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.blockNumber;
                         const expirationBlock = (blockNumber + 2000);
 

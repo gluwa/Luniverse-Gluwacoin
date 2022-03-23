@@ -68,7 +68,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -111,7 +114,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -151,7 +157,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -217,7 +226,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -275,7 +287,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -318,7 +333,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -361,7 +379,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -416,7 +437,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 10);
                         const signature = SignHelper.signReserve(4, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, user1.address, owner.address, amounToReserve, feeToPay, nounce, expirationBlock);
@@ -469,7 +493,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 5);
                     
@@ -522,7 +549,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 5);
                     
@@ -587,7 +617,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 5);
 
@@ -652,7 +685,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 5);
                     
@@ -714,7 +750,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToTransfer = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const signature = SignHelper.signTransfer(3, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, user1.address, amounToTransfer, feeToPay, nounce);
                         let input = await gluwaCoin.connect(owner).populateTransaction['transfer(address,address,uint256,uint256,uint256,bytes)'](
@@ -759,7 +798,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToBurn = 1000;
                         const feeToPay = 100;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amounToBurn, feeToPay, nounce);
                         let input = await gluwaCoin.connect(owner).populateTransaction['burn(address,uint256,uint256,uint256,bytes)'](
@@ -799,7 +841,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToBurn = 1000;
                         const feeToPay = 100;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amounToBurn, feeToPay, nounce);
                         let input = await gluwaCoin.connect(owner).populateTransaction['burn(address,uint256,uint256,uint256,bytes)'](
@@ -842,7 +887,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -901,7 +949,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 
@@ -982,7 +1033,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToTransfer = 1000;
                         const feeToPay = 100;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const transferSignature = SignHelper.signTransfer(3, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, user1.address, amounToTransfer, feeToPay, nounce);
                         const inputTransfer = await gluwaCoin.connect(owner).populateTransaction['transfer(address,address,uint256,uint256,uint256,bytes)'](
@@ -1024,7 +1078,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToBurn = 1000;
                         const feeToPay = 100;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const burnSignature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amounToBurn, feeToPay, nounce);
                         const inputBurn = await gluwaCoin.connect(owner).populateTransaction['burn(address,uint256,uint256,uint256,bytes)'](
@@ -1065,7 +1122,10 @@ describe('LuniverseGluwacoin - Transfer with signature, reserve and more', funct
                         const amounToReserve = 1000;
                         const feeToPay = 100;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.getBlockNumber();
                         const expirationBlock = (blockNumber + 2000);
 

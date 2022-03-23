@@ -107,7 +107,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);
                         
                         let msg;
@@ -228,7 +231,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         let msg;
                         try {
@@ -268,7 +274,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.blockNumber;
                         const expirationBlock = (blockNumber + 2000);
 
@@ -433,7 +442,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         let msg;
                         try {
                                 const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);        
@@ -553,7 +565,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         let msg;
                         try {
@@ -593,7 +608,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.blockNumber;
                         const expirationBlock = (blockNumber + 2000);
 
@@ -745,7 +763,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);
                         
                         let msg;
@@ -848,7 +869,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         const amounToTransfer = 0;
                         const feeToPay = 0;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         const signature = SignHelper.signTransfer(3, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, user1.address, amounToTransfer, feeToPay, nounce);
                         let input = await gluwaCoin.connect(owner).populateTransaction['transfer(address,address,uint256,uint256,uint256,bytes)'](
@@ -878,7 +902,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         const amounToReserve = 0;
                         const feeToPay = 0;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.blockNumber;
                         const expirationBlock = (blockNumber + 2000);
 
@@ -989,7 +1016,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         let msg;
                         try {
                                 const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);        
@@ -1105,7 +1135,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         let msg;
                         try {
@@ -1144,7 +1177,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.blockNumber;
                         const expirationBlock = (blockNumber + 2000);
 
@@ -1301,7 +1337,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);
                         
                         let msg;
@@ -1416,7 +1455,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         let msg;
                         try {
@@ -1455,7 +1497,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.blockNumber;
                         const expirationBlock = (blockNumber + 2000);
 
@@ -1614,7 +1659,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, emptyString, feeToPay, nounce);
                         
                         let msg;
@@ -1731,7 +1779,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         let msg;
                         try {
@@ -1770,7 +1821,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.blockNumber;
                         const expirationBlock = (blockNumber + 2000);
 
@@ -1964,7 +2018,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, randomString, feeToPay, nounce);
                         
                         let msg;
@@ -2085,7 +2142,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
 
                         let msg;
                         try {
@@ -2125,7 +2185,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
 
                         const feeToPay = 10;
                         const nounce = Date.now();
-                        const ownerKey = '0x' + gluwaInfo.OwnerKey;
+                        let ownerKey = gluwaInfo.OwnerKey;
+                        if(ownerKey.substring(0,2) !== '0x') {
+                                ownerKey = '0x' + ownerKey;
+                        }
                         const blockNumber = await provider.blockNumber;
                         const expirationBlock = (blockNumber + 2000);
 
