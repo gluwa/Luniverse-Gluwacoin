@@ -1,6 +1,6 @@
 require('dotenv').config({path:__dirname+'/.env.development'});
 require('@nomiclabs/hardhat-waffle');
-// require('solidity-coverage');
+require('solidity-coverage');
 require('@nomiclabs/hardhat-ethers');
 require('@openzeppelin/hardhat-upgrades');
 
