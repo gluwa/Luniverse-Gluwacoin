@@ -9,6 +9,7 @@ import "./abstracts/Peggable.sol";
 import "./abstracts/Reservable.sol";
 import "./roles/GluwaRole.sol"; 
 import "./roles/LuniverseRole.sol";
+import "./libs/GluwacoinModels.sol";
 /**
  * @dev Extension of {ERC20} that adds a set of accounts with the {MinterRole},
  * which have permission to mint (create) new tokens as they see fit.
@@ -59,7 +60,7 @@ contract LuniverseGluwacoin is PausableUpgradeable, GluwaRole, LuniverseRole, Bu
 
     function reserve(address sender, address recipient, address executor, uint256 amount, uint256 fee, uint256 nonce,
         uint256 expiryBlockNum, bytes memory sig) override public whenNotPaused returns (bool success) {
-        _useNonce(sender, 4, nonce); // 4 - Reserve
+        _useNonce(sender, GluwacoinModels.SigDomain.Reserve, nonce); // 4 - Reserve
         return super.reserve(sender,recipient,executor,amount,fee, nonce,expiryBlockNum,sig);
     }
 
@@ -75,7 +76,7 @@ contract LuniverseGluwacoin is PausableUpgradeable, GluwaRole, LuniverseRole, Bu
             burnerBalance >= amount,
             "ERC20Wrapper: burn amount exceed balance"
         );
-        _useNonce(burner, 1, nonce); // 1 - Burn
+        _useNonce(burner, GluwacoinModels.SigDomain.Burn, nonce); // 1 - Burn
         uint256 chainId = chainId();
         bytes32 hash = keccak256(
             abi.encodePacked(

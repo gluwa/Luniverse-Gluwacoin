@@ -39,7 +39,7 @@ contract ETHlessTransfer is BeforeTransferERC20, GluwaRole {
      */
     function transfer(address sender, address recipient, uint256 amount, uint256 fee, uint256 nonce, bytes memory sig)
     public onlyGluwa returns (bool success) {
-        _useNonce(sender, 3, nonce); // 3 - Transfer
+        _useNonce(sender, GluwacoinModels.SigDomain.Transfer, nonce); // 3 - Transfer
         uint256 chainId = chainId();
         bytes32 hash = keccak256(abi.encodePacked(GluwacoinModels.SigDomain.Transfer, chainId, address(this), 
         sender, recipient, amount, fee, nonce));

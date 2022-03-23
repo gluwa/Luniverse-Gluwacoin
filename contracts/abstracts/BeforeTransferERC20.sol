@@ -4,6 +4,7 @@ pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "../libs/GluwacoinModels.sol";
 
 /**
  * @dev Extension of {ERC20} that allows users to burn its token or burnFrom its allowance.
@@ -12,7 +13,7 @@ contract BeforeTransferERC20 is ContextUpgradeable, ERC20Upgradeable {
 
     uint8 private _decimals;
     
-    mapping (address => mapping (uint8 => mapping (uint256 => bool))) private _usedNonces;
+    mapping (address => mapping (GluwacoinModels.SigDomain => mapping (uint256 => bool))) private _usedNonces;
 
     function __BeforeTransferERC20_init(string memory name_, string memory symbol_, uint8 decimals_) internal onlyInitializing {
         __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_);
@@ -47,7 +48,7 @@ contract BeforeTransferERC20 is ContextUpgradeable, ERC20Upgradeable {
     /**
      * @dev Used by ETHLess transaction
      */
-    function _useNonce(address signer, uint8 domain, uint256 nonce) internal {
+    function _useNonce(address signer, GluwacoinModels.SigDomain domain, uint256 nonce) internal {
         require(!_usedNonces[signer][domain][nonce], "ETHless: the nonce has already been used for this address");
         _usedNonces[signer][domain][nonce] = true;
     }
