@@ -4,7 +4,6 @@ const { ethers } = require('hardhat');
 const TestHelper = require('./shared');
 const SignHelper = require('./signature');
 const Chance = require('chance');
-const { expectEvent } = require('@openzeppelin/test-helpers');
 const LuniverseGluwaCoinInfo = require('./upgradeability/LuniverseGluwaCoinInfo');
 use(solidity);
 
@@ -111,10 +110,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         if(ownerKey.substring(0,2) !== '0x') {
                                 ownerKey = '0x' + ownerKey;
                         }
-                        const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);
                         
                         let msg;
                         try {
+                                const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);
                                 let input = await gluwaCoin.connect(owner).populateTransaction['burn(address,uint256,uint256,uint256,bytes)'](
                                         owner.address,
                                         amount,
@@ -767,10 +766,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         if(ownerKey.substring(0,2) !== '0x') {
                                 ownerKey = '0x' + ownerKey;
                         }
-                        const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);
                         
                         let msg;
                         try {
+                                const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);
                                 let input = await gluwaCoin.connect(owner).populateTransaction['burn(address,uint256,uint256,uint256,bytes)'](
                                         owner.address,
                                         amount,
@@ -1341,10 +1340,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         if(ownerKey.substring(0,2) !== '0x') {
                                 ownerKey = '0x' + ownerKey;
                         }
-                        const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);
                         
                         let msg;
                         try {
+                                const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, amount, feeToPay, nounce);
                                 let input = await gluwaCoin.connect(owner).populateTransaction['burn(address,uint256,uint256,uint256,bytes)'](
                                         owner.address,
                                         amount,
@@ -1663,10 +1662,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         if(ownerKey.substring(0,2) !== '0x') {
                                 ownerKey = '0x' + ownerKey;
                         }
-                        const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, emptyString, feeToPay, nounce);
                         
                         let msg;
                         try {
+                                const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, emptyString, feeToPay, nounce);
                                 let input = await gluwaCoin.connect(owner).populateTransaction['burn(address,uint256,uint256,uint256,bytes)'](
                                         owner.address,
                                         emptyString,
@@ -1951,7 +1950,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
         describe('Test random string on different fn()', () => {
                 it('Test mint() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         
                         const randHashOwner = await ethers.utils.randomBytes(32);
 
@@ -1977,7 +1976,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test burn() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, 10000, owner.address);
                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
@@ -2002,7 +2001,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test burn(w/ signature) w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, 10000, owner.address);
                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
@@ -2022,10 +2021,10 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                         if(ownerKey.substring(0,2) !== '0x') {
                                 ownerKey = '0x' + ownerKey;
                         }
-                        const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, randomString, feeToPay, nounce);
                         
                         let msg;
                         try {
+                                const signature = SignHelper.signBurn(1, gluwaInfo.ChainId, gluwaCoin.address, owner.address, ownerKey, randomString, feeToPay, nounce);
                                 let input = await gluwaCoin.connect(owner).populateTransaction['burn(address,uint256,uint256,uint256,bytes)'](
                                         owner.address,
                                         randomString,
@@ -2041,7 +2040,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test burnFrom() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, 10000, user1.address);
                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
@@ -2069,7 +2068,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test transfer() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, 10000, owner.address);
                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
@@ -2096,7 +2095,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test transferFrom() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, 10000, user1.address);
                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
@@ -2126,7 +2125,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test transfer(w/ signature) w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, 10000, owner.address);
                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
@@ -2167,7 +2166,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test reserve(w/ signature) w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         const randHashOwner = await ethers.utils.randomBytes(32);
                         const inputPegOwner = await gluwaCoin.connect(owner).populateTransaction.peg(randHashOwner, 10010, owner.address);
                         await TestHelper.checkResult(inputPegOwner, gluwaCoin.address, owner, ethers, provider, 0);
@@ -2214,7 +2213,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test approve() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         let msg;
                         try {
                                 const input = await gluwaCoin.connect(owner).populateTransaction.approve(gluwaCoin.address, randomString);
@@ -2227,7 +2226,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test increaseAllowance() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         const input = await gluwaCoin.connect(owner).populateTransaction.approve(gluwaCoin.address, 10000);
                         await TestHelper.checkResult(input, gluwaCoin.address, owner, ethers, provider, 0);
                         let msg;
@@ -2242,7 +2241,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test decreaseAllowance() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         const inputApprove = await gluwaCoin.connect(owner).populateTransaction.approve(gluwaCoin.address, 10000);
                         await TestHelper.checkResult(inputApprove, gluwaCoin.address, owner, ethers, provider, 0);
                         let msg;
@@ -2257,7 +2256,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test addGluwa() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         let msg;
                         try {
                                 const input = await gluwaCoin.connect(owner).populateTransaction.addGluwa(user1.address, randomString);
@@ -2271,7 +2270,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test removeGluwa() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         let msg;
                         try {
                                 const input = await gluwaCoin.connect(owner).populateTransaction.removeGluwa(owner.address, randomString);
@@ -2285,7 +2284,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test addLuniverse() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         let msg;
                         try {
                                 const input = await gluwaCoin.connect(owner).populateTransaction.addLuniverse(randomString);
@@ -2297,7 +2296,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test addLuniverse() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         let msg;
                         try {
                                 const input = await gluwaCoin.connect(owner).populateTransaction.addLuniverse(randomString);
@@ -2309,7 +2308,7 @@ describe('LuniverseGluwacoin - Boundary test', function () {
                 });
                 it('Test removeLuniverse() w/ random string', async () => {
                         var chance = new Chance;
-                        const randomString = chance.string();
+                        const randomString = chance.string({ alpha: true, numeric: false, symbols: false, length: 10 });
                         let msg;
                         try {
                                 const input = await gluwaCoin.connect(owner).populateTransaction.removeLuniverse(randomString);

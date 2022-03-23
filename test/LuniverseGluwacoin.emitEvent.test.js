@@ -4,7 +4,6 @@ const { ethers } = require('hardhat');
 const TestHelper = require('./shared');
 const SignHelper = require('./signature');
 const Chance = require('chance');
-const { expectEvent } = require('@openzeppelin/test-helpers');
 const LuniverseGluwaCoinInfo = require('./upgradeability/LuniverseGluwaCoinInfo');
 use(solidity);
 

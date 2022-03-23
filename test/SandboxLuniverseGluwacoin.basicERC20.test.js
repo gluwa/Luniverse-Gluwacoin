@@ -3,7 +3,6 @@ const { solidity } = require('ethereum-waffle');
 const { ethers } = require('hardhat');
 const TestHelper = require('./shared');
 const Chance = require('chance');
-const { expectEvent } = require('@openzeppelin/test-helpers');
 const LuniverseGluwaCoinInfo = require('./upgradeability/LuniverseGluwaCoinInfo');
 use(solidity);
 
