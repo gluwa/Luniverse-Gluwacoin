@@ -8,82 +8,63 @@ console.log('\x1b[32m%s\x1b[0m', 'Connected to network: ', hre.network.name, hre
 const fileContractsAddressDeployed = 'contractsAddressDeployed.json';
 
 // Hardhat default account(0)
-let privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
-let userKey = '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266';
+let privateKey;
+let userKey;
 let rpcUrl = '';
 
-if(hre.network.name === 'kaleido') {
-    privateKey = `${process.env.KALEIDO_PRIVATEKEY}`;
-    userKey = `${process.env.KALEIDO_PRIVATEKEY}`;
+if(hre.network.name === 'hardhat') {
+    privateKey = ethers.Wallet.fromMnemonic(hre.network.config.accounts.mnemonic).privateKey;
+    userKey = ethers.Wallet.fromMnemonic(hre.network.config.accounts.mnemonic).privateKey;
+} else if(hre.network.name === 'kaleido') {
+    privateKey = hre.network.config.accounts[0];
+    userKey = hre.network.config.accounts[0];
 
     const USER = `${process.env.RPC_KALEIDO_USER}`;
     const PASS = `${process.env.RPC_KALEIDO_PASS}`;
     const RPC_ENDPOINT = `https://${process.env.RPC_KALEIDO_ENDPOINT}`;
     rpcUrl = {url: RPC_ENDPOINT, user: USER, password: PASS};
-}
-if(hre.network.name === 'ethereum') {
-    privateKey = `${process.env.ETHMAINNET_PRIVATEKEY}`;
-    userKey = `${process.env.ETHMAINNET_PRIVATEKEY}`;
-    rpcUrl = `${process.env.RPC_ETHMAINNET}`;
-}
-if(hre.network.name === 'ropsten') {
-    privateKey = `${process.env.ROPSTEN_PRIVATEKEY}`;
-    userKey = `${process.env.ROPSTEN_PRIVATEKEY}`;
-    rpcUrl = `${process.env.RPC_ROPSTEN}`;
-}
-if(hre.network.name === 'rinkeby') {
-    privateKey = `${process.env.RINKEBY_PRIVATEKEY}`;
-    userKey = `${process.env.RINKEBY_PRIVATEKEY}`;
-    rpcUrl = `${process.env.RPC_RINKEBY}`;
-}
-if(hre.network.name === 'kovan') {
-    privateKey = `${process.env.KOVAN_PRIVATEKEY}`;
-    userKey = `${process.env.KOVAN_PRIVATEKEY}`;
-    rpcUrl = `${process.env.RPC_KOVAN}`;
-}
-if(hre.network.name === 'polygon') {
-    privateKey = `${process.env.POLYGONMAINNET_PRIVATEKEY}`;
-    userKey = `${process.env.POLYGONMAINNET_PRIVATEKEY}`;
-    rpcUrl = `${process.env.RPC_POLYGONMAINNET}`;
-}
-if(hre.network.name === 'mumbai') {
-    privateKey = `${process.env.POLYGONMUMBAI_PRIVATEKEY}`;
-    userKey = `${process.env.POLYGONMUMBAI_PRIVATEKEY}`;
-    rpcUrl = `${process.env.RPC_POLYGONMUMBAI}`;
+} else {
+    privateKey = hre.network.config.accounts[0];
+    userKey = hre.network.config.accounts[0];
+    rpcUrl = hre.network.config.url;
 }
 
-let ContractAddress = {
-    ProxyAdmin_Address: '0x417c4C7298F20351b3d8F45ce20E32A9026BC31b'
-}
 // Contracts Address previously deployed on Kaleido
-let ProxyAdmin_Address = "0x417c4C7298F20351b3d8F45ce20E32A9026BC31b";
-let LuniverseGluwacoin_Address = "0x6e6A0D7778a8B5c722d71bF697A2036056C9F95b";
-let SandboxLuniverseGluwacoin_Address = "0x6e6A0D7778a8B5c722d71bF697A2036056C9F95b";
-let TransparentUpgradeableProxy_Address = "0x4f2bD74997E2ECbb277F80C480d01C908Ad1549b";
-let TransparentSandboxUpgradeableProxy_Address = "0xd02d10333984f348abb88fE73851fB60d0F19202";
+let ProxyAdmin_Address = "0xf3D0cCE35C0362c773C0cCB52723afFE5d2bF7cF";
+let LuniverseGluwacoin_Address = "0xae383E821edCe2DC8401Cd81c6315c4845d8a65e";
+let SandboxLuniverseGluwacoin_Address = "0xae383E821edCe2DC8401Cd81c6315c4845d8a65e";
+let TransparentUpgradeableProxy_Address = "0xA66b5Ab8694f5Ed5703A9c6b9b4C79a382EC92D5";
+let TransparentSandboxUpgradeableProxy_Address = "0xEe9edf17BC723cF89DfDeAAD616b5f5909594297";
 
-// Overrite address with contracts address in ./contractsAddressDeployed.json
-if (fs.existsSync(fileContractsAddressDeployed)) {
-    let rawdata = fs.readFileSync(fileContractsAddressDeployed);
-    let contractsAddressDeployed = JSON.parse(rawdata);
-    
-    contractsAddressDeployed
-        .filter((c) => c.network === hre.network.name)
-        .map((c) => {
-            if (c.name === 'ProxyAdmin')
-                ProxyAdmin_Address = c.address;
+// Get contracts address in ./contractsAddressDeployed.json
+if (hre.network.name !== 'hardhat') {
+    if (fs.existsSync(fileContractsAddressDeployed)) {
+        let rawdata = fs.readFileSync(fileContractsAddressDeployed);
+        let contractsAddressDeployed = JSON.parse(rawdata);
+        
+        contractsAddressDeployed
+            .filter((c) => c.network === hre.network.name)
+            .map((c) => {
+                if (c.name === 'ProxyAdmin')
+                    ProxyAdmin_Address = c.address;
 
-            if (c.name === 'LogicLuniverseGluwacoin')
-                LuniverseGluwacoin_Address = c.address;
+                if (c.name === 'LogicLuniverseGluwacoin')
+                    LuniverseGluwacoin_Address = c.address;
 
-            if (c.name === 'LogicSandboxLuniverseGluwacoin')
-                SandboxLuniverseGluwacoin_Address = c.address;
+                if (c.name === 'LogicSandboxLuniverseGluwacoin')
+                    SandboxLuniverseGluwacoin_Address = c.address;
 
-            if (c.name === 'UpgradeableLuniverseGluwacoin')
-                TransparentUpgradeableProxy_Address = c.address;
-            if (c.name === 'UpgradeableSandboxLuniverseGluwacoin')
-                TransparentSandboxUpgradeableProxy_Address = c.address;
-        })
+                if (c.name === 'UpgradeableLuniverseGluwacoin')
+                    TransparentUpgradeableProxy_Address = c.address;
+                if (c.name === 'UpgradeableSandboxLuniverseGluwacoin')
+                    TransparentSandboxUpgradeableProxy_Address = c.address;
+            })
+    } else {
+        throw(`Please deploy all contracts on the network you are running the test first.
+        File contractsAddressDeployed.json Missing
+        
+        Run: npm run cli`);
+    }
 }
 
 module.exports= async () => {
@@ -113,13 +94,3 @@ module.exports= async () => {
         "ChainId": hre.network.config.chainId // 31337 (hardhat) || chainId (luniverse)
     };
 }
-
-/*
-    Note for testing on luniverse
-
-    It's possible that some of the tests, testing execute function on expired reservation fail.
-    The issue seams to be @openzeppelin/test-helpers not detecting the RPC.
-
-    One way to solve the issue is to edit the node_modules/@openzeppelin/test-helpers/src/config/web3.js file
-    line 5 with const DEFAULT_PROVIDER_URL = 'http://baas-rpc.luniverse.io:8545?lChainId=1635501961136826136';
-*/
