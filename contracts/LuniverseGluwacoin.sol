@@ -76,7 +76,9 @@ contract LuniverseGluwacoin is PausableUpgradeable, GluwaRole, LuniverseRole, Bu
             burnerBalance >= amount,
             "ERC20Wrapper: burn amount exceed balance"
         );
-        _useNonce(burner, GluwacoinModels.SigDomain.Burn, nonce); // 1 - Burn
+
+        _useNonce(burner, GluwacoinModels.SigDomain.Burn, nonce);
+
         uint256 chainId = chainId();
         bytes32 hash = keccak256(
             abi.encodePacked(
@@ -96,6 +98,7 @@ contract LuniverseGluwacoin is PausableUpgradeable, GluwaRole, LuniverseRole, Bu
             burnedAmount = amount - fee;
         }
         _burn(burner, burnedAmount);
+
     }
     
     uint256[50] private __gap;
