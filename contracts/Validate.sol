@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.5.0;
 
-import "@openzeppelin/contracts/cryptography/ECDSA.sol";
+pragma solidity ^0.8.12;
+
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
 
 /**
  * @dev Signature verification
  */
 library Validate {
-    // using Address for address;
-    using ECDSA for bytes32;
+    using ECDSAUpgradeable for bytes32;
 
     /**
      * @dev Throws if given `sig` is an incorrect signature of the `sender`.

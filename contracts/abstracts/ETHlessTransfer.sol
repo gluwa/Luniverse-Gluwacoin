@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.5.0;
 
-// import "@openzeppelin/contracts/GSN/Context.sol";
-import "@openzeppelin/contracts/cryptography/ECDSA.sol";
-import "./ContextUpgradeable.sol";
-import "../libs/GluwacoinModels.sol";
+pragma solidity ^0.8.12;
+
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
 import "./BeforeTransferERC20.sol";
+import "../libs/GluwacoinModels.sol";
 import "../Validate.sol";
 import "../roles/GluwaRole.sol";
 
@@ -13,18 +13,14 @@ import "../roles/GluwaRole.sol";
  * @dev Extension of {ERC20} that allows users to send ETHless transfer by hiring a transaction relayer to pay the
  * gas fee for them. The relayer gets paid in this ERC20 token for `fee`.
  */
-contract ETHlessTransfer is ContextUpgradeable, BeforeTransferERC20, GluwaRole {
-    using ECDSA for bytes32;
+contract ETHlessTransfer is BeforeTransferERC20, GluwaRole {
+    using ECDSAUpgradeable for bytes32;
 
-    mapping (address => mapping (uint8 => mapping (uint256 => bool))) private _usedNonces;
-    function __ETHlessTransfer_init(string memory name_, string memory symbol_, uint8 decimals_, uint256 chainId_) internal initializer {
-        __Context_init_unchained();
-        __BeforeTransferERC20_init_unchained(name_, symbol_, decimals_, chainId_);
-        __GluwaRole_init_unchained();
+    function __ETHlessTransfer_init() internal onlyInitializing {
         __ETHlessTransfer_init_unchained();
     }
 
-    function __ETHlessTransfer_init_unchained() internal initializer {
+    function __ETHlessTransfer_init_unchained() internal onlyInitializing {
     }
 
     /**
@@ -43,10 +39,10 @@ contract ETHlessTransfer is ContextUpgradeable, BeforeTransferERC20, GluwaRole {
      */
     function transfer(address sender, address recipient, uint256 amount, uint256 fee, uint256 nonce, bytes memory sig)
     public onlyGluwa returns (bool success) {
-        _useNonce(sender, 3, nonce); // 3 - Transfer
+        _useNonce(sender, GluwacoinModels.SigDomain.Transfer, nonce);
+
         uint256 chainId = chainId();
-        // bytes32 hash = keccak256(abi.encodePacked(address(this), sender, recipient, amount, fee, nonce));
-        bytes32 hash = keccak256(abi.encodePacked(GluwacoinModels.SigDomain.Transfer,chainId,address(this), 
+        bytes32 hash = keccak256(abi.encodePacked(GluwacoinModels.SigDomain.Transfer, chainId, address(this), 
         sender, recipient, amount, fee, nonce));
 
         Validate.validateSignature(hash, sender, sig);
@@ -55,13 +51,6 @@ contract ETHlessTransfer is ContextUpgradeable, BeforeTransferERC20, GluwaRole {
         _transfer(sender, recipient, amount);
 
         return true;
-    }
-
-    /* @dev Uses `nonce` for the signer.
-    */
-    function _useNonce(address signer, uint8 domain, uint256 nonce) internal {
-        require(!_usedNonces[signer][domain][nonce], "ETHless: the nonce has already been used for this address");
-        _usedNonces[signer][domain][nonce] = true;
     }
 
     /** @dev Collects `fee` from the sender.

@@ -24,26 +24,18 @@ For more information, see [Gluwacoin](/Gluwacoin.md), [gluwacoin.com](https://gl
 $ npm install
 ```
 
-#### Initializing the openzeppelin project
+#### Use the CLI User Interface for deployment and testing
 ```commandline
-$ npx oz init
+$ npm run cli
 ```
 
-#### Linking the Contracts Ethereum Package
+#### Deploy and run tests on local testnet
 
-You need this for local testing. We will use a preset of ERC20 to use as a base token for the ERC-20 Wrapper Gluwacoin.
+Let’s deploy and test Prize Linked Account contract to our development network.
 
 ```commandline
-$ npx oz link @openzeppelin/contracts-ethereum-package
+$ npx hardhat test
 ```
+More Hardhat documentation
 
-#### Run a local testnet
-
-Let’s deploy an ERC20 token contract to our development network.
-Make sure to have a Ganache instance running, or start one by running:
-```commandline
-$ npx ganache-cli --deterministic
-```
-Note that the current version of Ganache does not work on `Node 14`.
-We are using `Node 12`.
-https://github.com/trufflesuite/ganache-cli/issues/732
+https://hardhat.org/getting-started/
