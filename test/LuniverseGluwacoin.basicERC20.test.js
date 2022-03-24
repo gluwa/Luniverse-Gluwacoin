@@ -2,7 +2,6 @@ const { expect, use } = require('chai');
 const { solidity } = require('ethereum-waffle');
 const { ethers } = require('hardhat');
 const TestHelper = require('./shared');
-const Chance = require('chance');
 const LuniverseGluwaCoinInfo = require('./upgradeability/LuniverseGluwaCoinInfo');
 use(solidity);
 
@@ -88,7 +87,7 @@ describe('LuniverseGluwacoin - Basic ERC20 function', function () {
                 it('Pause contract / verify contract is paused', async () => {
                         const currentlyPaused = await gluwaCoin.paused();
                         if (currentlyPaused) {
-                                let inputUnpause = await gluwaCoin.unpause();
+                                let inputUnpause = await gluwaCoin.connect(owner).populateTransaction.unpause();
                                 await TestHelper.checkResult(inputUnpause, gluwaCoin.address, owner, ethers, provider, 0);
                         }
                         input = await gluwaCoin.connect(owner).populateTransaction.pause();     
