@@ -13,7 +13,7 @@ var sign = require('./signature');
 const name = 'LuniverseGluwacoin';
 const symbol = 'LG';
 const decimals = new BN('18');
-const chainId = new BN('1635501961136826136');
+const chainId = 1;
 const SigDomainTransfer = 3;
 
 // Start test block
@@ -474,7 +474,7 @@ describe('LuniverseGluwacoin_Peggable', function () {
     it('cannot peg invalid pegTxnHash', async function () {
         await expectRevert(
             this.token.peg(invalidPegTxnHash, pegAmount, pegSender, { from : deployer }),
-            'invalid bytes32 value'
+            'invalid arrayify value'
         );
     });
 
