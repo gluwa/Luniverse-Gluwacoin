@@ -1,10 +1,10 @@
-name: Run all tests
+name: Run ERC20 basic tests on Kaleido
 
 on:
   workflow_dispatch:
 
 jobs:
-  remote testing:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
