@@ -17,4 +17,4 @@ jobs:
       - name: Truffle Compile
         run: truffle compile
       - name: Truffle Test
-        run: truffle test
+        run: truffle test ./test/LuniverseGluwacoin.test.js
