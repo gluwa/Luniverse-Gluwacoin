@@ -1,0 +1,22 @@
+name: Run ERC20 basic tests on Kaleido
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: NPM Clean Install
+        run: npm ci
+      - name: Hardhat Compile
+        run: npx hardhat compile
+      - name: Hardhat Test
+        run: npx hardhat test test/LuniverseGluwacoin.basicERC20.test.js
+        with:
+          args: --network kaleido
+        env:
+          RPC_KALEIDO_USER: ${{ secrets.RPC_KALEIDO_USER }}
+          RPC_KALEIDO_PASS: ${{ secrets.RPC_KALEIDO_PASS }}
+          KALEIDO_PRIVATEKEY: ${{ secrets.KALEIDO_PRIVATEKEY }}
